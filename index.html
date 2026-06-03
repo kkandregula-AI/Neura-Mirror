@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#0a0a12"/>
+<meta name="description" content="How LLMs Mimic the Human Brain — Interactive Visualization"/>
+<link rel="manifest" href="manifest.json"/>
+<title>NeuraMirror — Brain × LLM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bio: #00e5b4;
+    --ai: #7b61ff;
+    --warm: #ff6b35;
+    --bg: #07070f;
+    --surface: #0f0f1e;
+    --card: #13132a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --glow-bio: 0 0 30px rgba(0,229,180,0.3);
+    --glow-ai: 0 0 30px rgba(123,97,255,0.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Space Mono',monospace;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:9999;opacity:.4;
+  }
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:40px 20px;text-align:center;position:relative;
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;
+    background:radial-gradient(ellipse 80% 60% at 20% 40%,rgba(0,229,180,0.08) 0%,transparent 60%),
+               radial-gradient(ellipse 70% 70% at 80% 60%,rgba(123,97,255,0.1) 0%,transparent 60%);
+  }
+  .hero-label{
+    font-family:'Syne',sans-serif;
+    font-size:11px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:24px;
+    animation:fadeUp 0.8s ease both;
+  }
+  .hero-title{
+    font-family:'Syne',sans-serif;
+    font-size:clamp(42px,8vw,96px);font-weight:800;
+    line-height:.95;margin-bottom:24px;
+    animation:fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-title .bio{color:var(--bio);}
+  .hero-title .divide{color:var(--muted);font-weight:400;}
+  .hero-title .aii{color:var(--ai);}
+  .hero-sub{
+    font-size:13px;color:var(--muted);max-width:500px;
+    line-height:1.8;margin-bottom:48px;
+    animation:fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-cta{
+    display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+    animation:fadeUp 0.8s 0.3s ease both;
+  }
+  .btn{
+    padding:12px 28px;border-radius:4px;
+    font-family:'Space Mono',monospace;font-size:12px;
+    font-weight:700;letter-spacing:1px;text-transform:uppercase;
+    cursor:pointer;border:none;text-decoration:none;
+    transition:all .25s;display:inline-block;
+  }
+  .btn-bio{background:var(--bio);color:#07070f;}
+  .btn-bio:hover{box-shadow:var(--glow-bio);transform:translateY(-2px);}
+  .btn-ai{background:transparent;border:1px solid var(--ai);color:var(--ai);}
+  .btn-ai:hover{background:var(--ai);color:#fff;box-shadow:var(--glow-ai);transform:translateY(-2px);}
+
+  /* ── DUAL CANVAS ANIMATION ── */
+  .canvas-row{
+    display:flex;gap:0;justify-content:center;
+    margin:60px 0 0;
+    animation:fadeUp 1s 0.4s ease both;
+  }
+  .canvas-wrap{position:relative;}
+  .canvas-wrap canvas{display:block;}
+  .canvas-label{
+    position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    font-family:'Syne',sans-serif;font-size:10px;letter-spacing:3px;
+    text-transform:uppercase;
+  }
+  .canvas-label.bio{color:var(--bio);}
+  .canvas-label.ai{color:var(--ai);}
+
+  /* ── NAV TABS ── */
+  .nav-section{
+    position:sticky;top:0;z-index:100;
+    background:rgba(7,7,15,0.92);backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-tabs{
+    display:flex;overflow-x:auto;
+    max-width:1100px;margin:0 auto;
+    scrollbar-width:none;
+  }
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tab{
+    flex-shrink:0;padding:16px 24px;
+    font-family:'Syne',sans-serif;font-size:12px;
+    font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--muted);cursor:pointer;border:none;background:none;
+    border-bottom:2px solid transparent;transition:all .2s;
+    white-space:nowrap;
+  }
+  .nav-tab.active{color:var(--text);border-bottom-color:var(--bio);}
+  .nav-tab:hover:not(.active){color:var(--text);}
+
+  /* ── SECTIONS ── */
+  section{padding:80px 20px;max-width:1100px;margin:0 auto;}
+  .section-label{
+    font-size:10px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--muted);margin-bottom:16px;
+  }
+  .section-title{
+    font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);
+    font-weight:800;line-height:1.1;margin-bottom:40px;
+  }
+
+  /* ── COMPARISON CARDS ── */
+  .compare-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:2px;background:var(--border);border-radius:12px;overflow:hidden;
+  }
+  @media(max-width:640px){.compare-grid{grid-template-columns:1fr;}}
+  .compare-card{
+    background:var(--card);padding:32px;
+    transition:background .2s;
+  }
+  .compare-card:hover{background:#1a1a30;}
+  .compare-card.bio-card .card-icon{color:var(--bio);}
+  .compare-card.ai-card .card-icon{color:var(--ai);}
+  .card-icon{font-size:28px;margin-bottom:16px;}
+  .card-badge{
+    display:inline-block;padding:4px 10px;border-radius:2px;
+    font-size:9px;letter-spacing:2px;text-transform:uppercase;
+    font-weight:700;margin-bottom:12px;
+  }
+  .badge-bio{background:rgba(0,229,180,0.15);color:var(--bio);}
+  .badge-ai{background:rgba(123,97,255,0.15);color:var(--ai);}
+  .card-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
+  .card-desc{font-size:12px;line-height:1.9;color:var(--muted);}
+
+
+  /* ── INTERACTIVE NEURON / TRANSFORMER ── */
+  .interactive-row{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:24px;
+  }
+  @media(max-width:700px){.interactive-row{grid-template-columns:1fr;}}
+  .interactive-box{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:28px;
+  }
+  .ibox-title{
+    font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+    margin-bottom:6px;
+  }
+  .ibox-sub{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.7;}
+  .ibox-canvas{width:100%;height:220px;border-radius:8px;overflow:hidden;}
+  .ibox-canvas canvas{width:100%;height:100%;}
+
+  /* ── LEARNING COMPARISON ── */
+  .learning-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:16px;
+  }
+  .learning-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:28px;
+    position:relative;overflow:hidden;
+  }
+  .learning-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  }
+  .learning-card.bio-card::before{background:var(--bio);}
+  .learning-card.ai-card::before{background:var(--ai);}
+  .learning-card.both-card::before{background:linear-gradient(90deg,var(--bio),var(--ai));}
+  .learning-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
+  .learning-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .learning-list li{
+    font-size:11px;color:var(--muted);line-height:1.7;
+    padding-left:16px;position:relative;
+  }
+  .learning-list li::before{
+    content:'▸';position:absolute;left:0;
+  }
+  .learning-card.bio-card .learning-list li::before{color:var(--bio);}
+  .learning-card.ai-card .learning-list li::before{color:var(--ai);}
+  .learning-card.both-card .learning-list li::before{color:var(--warm);}
+
+
+  /* ── STAT BARS ── */
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+  }
+  .stat-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:24px;
+  }
+  .stat-label{font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:1px;}
+  .stat-row{display:flex;justify-content:space-between;margin-bottom:8px;align-items:center;}
+  .stat-name{font-size:11px;}
+  .stat-val{font-size:11px;font-weight:700;}
+  .stat-bar-bg{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;margin-bottom:16px;}
+  .stat-bar-fill{height:6px;border-radius:3px;transition:width 1.5s cubic-bezier(.16,1,.3,1);}
+
+  /* ── FOOTER ── */
+  footer{
+    text-align:center;padding:40px 20px;
+    border-top:1px solid var(--border);
+    font-size:11px;color:var(--muted);
+  }
+  footer span{color:var(--bio);}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(24px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;} 50%{opacity:.4;}
+  }
+  .pulse{animation:pulse 2s infinite;}
+
+  .hero-scroll-hint{
+    font-family:'Syne',sans-serif;font-size:12px;letter-spacing:3px;
+    color:var(--muted);animation:fadeUp 1s 0.3s ease both, bobble 2s 1.5s ease-in-out infinite;
+  }
+  @keyframes bobble{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+  /* ── ANALOGY CANVAS SECTION ── */
+  .analogy-canvas-wrap{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+  }
+  #analogyCanvas{width:100%;display:block;}
+
+  /* ── FLOW PIPELINE ── */
+  .pipeline-wrap{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;overflow:hidden;
+  }
+  #pipelineCanvas{width:100%;display:block;}
+
+  /* ── RESEARCH SECTION ── */
+  .res-bridge{
+    display:grid;grid-template-columns:1fr 80px 1fr;
+    gap:0;align-items:start;
+    background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  }
+  .res-bridge-col{padding:28px 24px;}
+  .res-bridge-col.bio{border-right:1px solid var(--border);}
+  .res-bridge-col.ai{border-left:1px solid var(--border);}
+  .res-bridge-label{
+    font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+    margin-bottom:20px;
+  }
+  .res-bridge-col.bio .res-bridge-label{color:var(--bio);}
+  .res-bridge-col.ai .res-bridge-label{color:var(--ai);}
+  .res-bridge-items{display:flex;flex-direction:column;gap:14px;}
+  .res-bridge-item{
+    font-size:11px;color:var(--muted);
+    padding:8px 12px;background:rgba(255,255,255,0.03);
+    border-radius:6px;line-height:1.5;
+  }
+  .res-bridge-center{display:flex;align-items:center;justify-content:center;padding:28px 0;}
+  @media(max-width:600px){
+    .res-bridge{grid-template-columns:1fr;}
+    .res-bridge-center{display:none;}
+    .res-bridge-col.bio,.res-bridge-col.ai{border:none;border-bottom:1px solid var(--border);}
+  }
+  .res-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:16px;
+  }
+  .res-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:24px;position:relative;
+    transition:transform .2s,box-shadow .2s;
+  }
+  .res-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+  .res-card.helps{border-top:3px solid var(--bio);}
+  .res-card-num{
+    font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+    color:rgba(0,229,180,0.15);position:absolute;top:16px;right:20px;
+  }
+  .res-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;padding-right:40px;}
+  .res-card-desc{font-size:11px;color:var(--muted);line-height:1.85;margin-bottom:14px;}
+  .res-tag{
+    font-size:9px;letter-spacing:1px;color:rgba(0,229,180,0.5);
+    border:1px solid rgba(0,229,180,0.15);padding:4px 8px;border-radius:3px;
+    display:inline-block;
+  }
+  .res-limits{display:flex;flex-direction:column;gap:3px;}
+  .res-limit-item{
+    display:flex;gap:16px;align-items:flex-start;
+    background:var(--card);padding:20px 24px;
+    border-left:3px solid rgba(255,107,53,0.4);
+    transition:border-color .2s;
+  }
+  .res-limit-item:hover{border-left-color:var(--warm);}
+  .res-limit-item:first-child{border-radius:10px 10px 0 0;}
+  .res-limit-item:last-child{border-radius:0 0 10px 10px;}
+  .res-limit-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
+  .res-limit-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;}
+  .res-limit-desc{font-size:11px;color:var(--muted);line-height:1.8;}
+  .res-verdict{
+    background:linear-gradient(135deg,rgba(0,229,180,0.06),rgba(123,97,255,0.06));
+    border:1px solid rgba(0,229,180,0.15);border-radius:12px;
+  }
+  .res-verdict-inner{padding:40px;text-align:center;}
+  .res-verdict-icon{font-size:36px;margin-bottom:16px;}
+  .res-verdict-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:16px;}
+  .res-verdict-desc{font-size:12px;color:var(--muted);line-height:2;max-width:640px;margin:0 auto;}
+
+  /* ── DISCLAIMER BADGE ── */
+  .disclaimer-badge{
+    display:flex;gap:14px;align-items:flex-start;
+    background:rgba(255,107,53,0.07);
+    border:1px solid rgba(255,107,53,0.25);
+    border-left:4px solid var(--warm);
+    border-radius:8px;padding:16px 20px;
+    margin-bottom:40px;max-width:780px;
+  }
+  .disclaimer-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+  .disclaimer-title{
+    font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
+    color:var(--warm);margin-bottom:5px;
+  }
+  .disclaimer-text{font-size:10px;color:var(--muted);line-height:1.8;}
+  .res-tag[href]{
+    cursor:pointer;text-decoration:none;
+    transition:background .2s,color .2s;display:inline-block;
+  }
+  .res-tag[href]:hover{background:rgba(0,229,180,0.2);color:var(--bio);}
+
+  .reveal{opacity:0;transform:translateY(32px);transition:all .7s cubic-bezier(.16,1,.3,1);}
+  .reveal.visible{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:1;width:100%;">
+    <p class="hero-label">Interactive Visualization · Neuroscience × AI</p>
+    <h1 class="hero-title">
+      <span class="bio">Neura</span><span class="divide">×</span><span class="aii">Mirror</span>
+    </h1>
+    <p class="hero-sub">How Large Language Models mirror — and diverge from — the architecture of the human brain. An interactive, layered exploration.</p>
+    <div class="hero-cta">
+      <span class="hero-scroll-hint">↓ Scroll to explore</span>
+    </div>
+    <div class="canvas-row">
+      <div class="canvas-wrap">
+        <canvas id="brainCanvas" width="260" height="200"></canvas>
+        <span class="canvas-label bio">Human Brain</span>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="llmCanvas" width="260" height="200"></canvas>
+        <span class="canvas-label ai">LLM Network</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-section">
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-target="analogies">Analogies</button>
+    <button class="nav-tab" data-target="flow">Signal Flow</button>
+    <button class="nav-tab" data-target="interactive">Architecture</button>
+    <button class="nav-tab" data-target="learning">Learning</button>
+    <button class="nav-tab" data-target="compare">Stats</button>
+    <button class="nav-tab" data-target="diverge">Differences</button>
+    <button class="nav-tab" data-target="research">🔬 Research</button>
+  </div>
+</div>
+
+
+<!-- ANALOGIES CANVAS -->
+<section id="analogies">
+  <div class="reveal">
+    <p class="section-label">// Layer 01</p>
+    <h2 class="section-title">Direct <span style="color:var(--bio)">Structural</span> Analogies</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.8;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
+  </div>
+  <div class="analogy-canvas-wrap reveal">
+    <canvas id="analogyCanvas" height="560"></canvas>
+  </div>
+</section>
+
+<!-- SIGNAL FLOW PIPELINE -->
+<section id="flow">
+  <div class="reveal">
+    <p class="section-label">// Layer 02</p>
+    <h2 class="section-title">Signal <span style="color:var(--warm)">Flow</span> — Brain vs LLM</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.8;">Watch how information travels layer-by-layer through both systems simultaneously.</p>
+  </div>
+  <div class="pipeline-wrap reveal">
+    <canvas id="pipelineCanvas" height="320"></canvas>
+  </div>
+</section>
+
+<!-- INTERACTIVE ARCHITECTURE -->
+<section id="interactive">
+  <div class="reveal">
+    <p class="section-label">// Layer 03</p>
+    <h2 class="section-title">Visual <span style="color:var(--ai)">Architecture</span></h2>
+  </div>
+  <div class="interactive-row reveal">
+    <div class="interactive-box">
+      <div class="ibox-title" style="color:var(--bio)">🧠 Biological Neuron</div>
+      <div class="ibox-sub">Dendrites receive signals. Cell body integrates. Axon fires if threshold exceeded.</div>
+      <div class="ibox-canvas"><canvas id="neuronCanvas" width="360" height="220"></canvas></div>
+    </div>
+    <div class="interactive-box">
+      <div class="ibox-title" style="color:var(--ai)">🤖 Artificial Neuron (Perceptron)</div>
+      <div class="ibox-sub">Inputs × weights, summed, passed through activation function for output.</div>
+      <div class="ibox-canvas"><canvas id="perceptronCanvas" width="360" height="220"></canvas></div>
+    </div>
+  </div>
+  <div style="height:24px;"></div>
+  <div class="interactive-row reveal">
+    <div class="interactive-box" style="grid-column:1/-1;">
+      <div class="ibox-title" style="color:var(--ai)">⚡ Transformer Attention — "Focus Like a Brain"</div>
+      <div class="ibox-sub">Each token queries every other token for relevance — just like selective attention in the prefrontal cortex.</div>
+      <canvas id="attentionCanvas" width="900" height="180" style="width:100%;border-radius:8px;"></canvas>
+    </div>
+  </div>
+</section>
+
+
+<!-- LEARNING -->
+<section id="learning">
+  <div class="reveal">
+    <p class="section-label">// Layer 04</p>
+    <h2 class="section-title">How They <span style="color:var(--bio)">Learn</span></h2>
+  </div>
+  <div class="learning-grid reveal">
+    <div class="learning-card bio-card">
+      <div class="card-badge badge-bio">Human Brain</div>
+      <div class="learning-title">Biological Learning</div>
+      <ul class="learning-list">
+        <li>Hebbian plasticity: "fire together, wire together" — synaptic strength increases with co-activation</li>
+        <li>Hippocampal consolidation during sleep converts short-term to long-term memory</li>
+        <li>One-shot learning: a single frightening event can form a lifelong memory</li>
+        <li>Dopaminergic reward signals reinforce beneficial behaviors automatically</li>
+        <li>Continuous learning throughout life without forgetting prior knowledge</li>
+      </ul>
+    </div>
+    <div class="learning-card ai-card">
+      <div class="card-badge badge-ai">LLM / Neural Net</div>
+      <div class="learning-title">Computational Learning</div>
+      <ul class="learning-list">
+        <li>Gradient descent: compute error, backpropagate derivatives, nudge all weights slightly</li>
+        <li>Requires millions-to-billions of examples to generalize robustly</li>
+        <li>Catastrophic forgetting: learning new tasks can overwrite prior skills unless managed</li>
+        <li>RLHF (Reinforcement Learning from Human Feedback) mimics reward-based learning</li>
+        <li>Discrete training phases; frozen weights during inference (no real-time learning)</li>
+      </ul>
+    </div>
+    <div class="learning-card both-card" style="grid-column:1/-1;">
+      <div class="card-badge" style="background:rgba(255,107,53,0.15);color:var(--warm);">Shared Principles</div>
+      <div class="learning-title">Where They Converge</div>
+      <ul class="learning-list" style="columns:2;gap:24px;">
+        <li>Both use error-driven adjustment to improve over time</li>
+        <li>Both form distributed, not localized, representations</li>
+        <li>Both exhibit generalization to unseen scenarios</li>
+        <li>Both benefit from structured, varied exposure during training/development</li>
+        <li>Both show emergent capabilities not explicitly programmed</li>
+        <li>Transfer learning mirrors how humans apply knowledge across domains</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="compare">
+  <div class="reveal">
+    <p class="section-label">// Layer 05</p>
+    <h2 class="section-title">By The <span style="color:var(--ai)">Numbers</span></h2>
+  </div>
+  <div class="stat-grid reveal" id="statGrid">
+    <!-- filled by JS -->
+  </div>
+</section>
+
+<!-- DIVERGE -->
+<section id="diverge">
+  <div class="reveal">
+    <p class="section-label">// Layer 06</p>
+    <h2 class="section-title">Where They <span style="color:var(--warm)">Diverge</span></h2>
+  </div>
+  <div class="compare-grid reveal">
+    <div class="compare-card bio-card">
+      <div class="card-icon">🔋</div>
+      <div class="card-badge badge-bio">Brain</div>
+      <div class="card-title">~20 Watts</div>
+      <div class="card-desc">The entire human brain runs on roughly 20 watts — less than a dim light bulb. Extraordinarily energy-efficient due to sparse, event-driven spiking.</div>
+    </div>
+    <div class="compare-card ai-card">
+      <div class="card-icon">⚡</div>
+      <div class="card-badge badge-ai">LLM</div>
+      <div class="card-title">Megawatts (Training)</div>
+      <div class="card-desc">Training a frontier LLM consumes millions of kilowatt-hours. Even inference at scale requires dedicated data centers with massive power draws.</div>
+    </div>
+    <div class="compare-card bio-card">
+      <div class="card-icon">🌍</div>
+      <div class="card-badge badge-bio">Brain</div>
+      <div class="card-title">Embodied & Grounded</div>
+      <div class="card-desc">Human cognition is deeply tied to a physical body — proprioception, emotion, pain, hunger all shape reasoning in fundamental ways. Thinking happens in a body.</div>
+    </div>
+    <div class="compare-card ai-card">
+      <div class="card-icon">💻</div>
+      <div class="card-badge badge-ai">LLM</div>
+      <div class="card-title">Disembodied Text</div>
+      <div class="card-desc">LLMs have no sensory experience of the world. All knowledge comes from text patterns. There is no hunger, fear, or physical intuition grounding the model.</div>
+    </div>
+    <div class="compare-card bio-card">
+      <div class="card-icon">💡</div>
+      <div class="card-badge badge-bio">Brain</div>
+      <div class="card-title">One-shot Learning</div>
+      <div class="card-desc">A human can learn a new concept from a single vivid example, especially when emotionally charged. The hippocampus binds features rapidly into memory.</div>
+    </div>
+    <div class="compare-card ai-card">
+      <div class="card-icon">📦</div>
+      <div class="card-badge badge-ai">LLM</div>
+      <div class="card-title">Massive Data Hungry</div>
+      <div class="card-desc">Current LLMs need trillions of tokens of training data to generalize. Few-shot capabilities exist but true one-shot learning at human level remains unsolved.</div>
+    </div>
+    <div class="compare-card bio-card">
+      <div class="card-icon">🎭</div>
+      <div class="card-badge badge-bio">Brain</div>
+      <div class="card-title">Consciousness & Qualia</div>
+      <div class="card-desc">Humans have subjective experience — the "redness" of red, the ache of sadness. These qualia are deeply real and shape all cognition and motivation.</div>
+    </div>
+    <div class="compare-card ai-card">
+      <div class="card-icon">🔣</div>
+      <div class="card-badge badge-ai">LLM</div>
+      <div class="card-title">No Inner Experience</div>
+      <div class="card-desc">LLMs produce language that describes emotion and experience, but there is no evidence of inner subjective states. It's sophisticated pattern matching, not feeling.</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="reveal">
+    <p class="section-label">// Layer 07 · Neuro × AI Frontier</p>
+    <h2 class="section-title">Degenerative Neurons<br><span style="color:var(--warm)">vs</span> LLM Weight Loss</h2>
+    <p style="font-size:12px;color:var(--muted);max-width:680px;line-height:1.9;margin-bottom:24px;">
+      The Brain↔LLM analogy opens a powerful lens for neurodegeneration research — giving scientists a mathematical framework to model, predict, and simulate what goes wrong when neurons die.
+    </p>
+    <!-- DISCLAIMER BADGE -->
+    <div class="disclaimer-badge reveal">
+      <span class="disclaimer-icon">⚠️</span>
+      <div>
+        <div class="disclaimer-title">Research References — Verify Before Citing</div>
+        <div class="disclaimer-text">Cards below link to real peer-reviewed papers. Summaries are illustrative simplifications. Always consult the original source before using in academic, clinical, or professional work. Papers sourced from arXiv, PubMed, PNAS, NIA, Springer, and IBM Research.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALOGY BRIDGE -->
+  <div class="res-bridge reveal">
+    <div class="res-bridge-col bio">
+      <div class="res-bridge-label">🧠 Biological Degeneration</div>
+      <div class="res-bridge-items">
+        <div class="res-bridge-item">Neuron death (apoptosis)</div>
+        <div class="res-bridge-item">Synapse weakening</div>
+        <div class="res-bridge-item">Network disconnection</div>
+        <div class="res-bridge-item">Memory consolidation failure</div>
+        <div class="res-bridge-item">Language production loss</div>
+      </div>
+    </div>
+    <div class="res-bridge-center">
+      <canvas id="bridgeCanvas" width="80" height="300"></canvas>
+    </div>
+    <div class="res-bridge-col ai">
+      <div class="res-bridge-label">🤖 AI / Computational Mirror</div>
+      <div class="res-bridge-items">
+        <div class="res-bridge-item">Node pruning / dropout</div>
+        <div class="res-bridge-item">Weight decay / L2 loss</div>
+        <div class="res-bridge-item">Layer collapse / dead neurons</div>
+        <div class="res-bridge-item">Catastrophic forgetting</div>
+        <div class="res-bridge-item">Output head degradation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHERE ANALOGY HELPS -->
+  <div style="height:48px;"></div>
+  <div class="reveal">
+    <p class="section-label" style="color:var(--bio);">✓ Where the Analogy Actively Helps Research</p>
+  </div>
+  <div class="res-grid reveal">
+    <div class="res-card helps">
+      <div class="res-card-num">01</div>
+      <div class="res-card-title">Alzheimer's Progression Modelling via GNN</div>
+      <div class="res-card-desc">Graph neural networks map how connectivity loss spreads across the brain — mirroring how weight collapse propagates through network layers. A GNN-based model using rs-fMRI data achieved 82.9% accuracy predicting transition to more severe cognitive impairment stages.</div>
+      <a class="res-tag" href="https://arxiv.org/abs/2604.06469" target="_blank" rel="noopener">📄 Moghaddami et al. · arXiv 2604.06469</a>
+    </div>
+    <div class="res-card helps">
+      <div class="res-card-num">02</div>
+      <div class="res-card-title">AI Speech as Early Alzheimer's Diagnosis</div>
+      <div class="res-card-desc">NIA-funded research using LLMs to analyze speech transcripts predicted progression from mild cognitive impairment to Alzheimer's with over 78% accuracy. Acoustic + linguistic feature integration now achieves above 85% in benchmark datasets (ADReSS / ADReSSo).</div>
+      <a class="res-tag" href="https://www.nia.nih.gov/news/ai-speech-analysis-predicted-progression-cognitive-impairment-alzheimers-over-78-accuracy" target="_blank" rel="noopener">📄 Amini et al. · NIA / Alzheimer's & Dementia 2024</a>
+    </div>
+    <div class="res-card helps">
+      <div class="res-card-num">03</div>
+      <div class="res-card-title">Catastrophic Forgetting = Memory Model</div>
+      <div class="res-card-desc">DeepMind's landmark EWC paper showed that task-specific synaptic consolidation in AI directly mirrors how brains protect memories — and how Alzheimer's erases recent memories first. The algorithm was inspired by synaptic consolidation in mammalian brains.</div>
+      <a class="res-tag" href="https://www.pnas.org/doi/10.1073/pnas.1611835114" target="_blank" rel="noopener">📄 Kirkpatrick et al. · PNAS 2017 · DeepMind</a>
+    </div>
+    <div class="res-card helps">
+      <div class="res-card-num">04</div>
+      <div class="res-card-title">AlphaFold → Protein Drug Discovery</div>
+      <div class="res-card-desc">DeepMind's AlphaFold2, released 2021, predicted 200M+ protein structures including tau and amyloid implicated in Alzheimer's and Parkinson's. AlphaFold3 (2024) extends this to protein complexes, directly accelerating drug target identification for neurodegenerative disease.</div>
+      <a class="res-tag" href="https://www.sciencedirect.com/science/article/abs/pii/S0959440X22002056" target="_blank" rel="noopener">📄 Thornton et al. · Curr. Opinion Struct. Biology 2023</a>
+    </div>
+    <div class="res-card helps">
+      <div class="res-card-num">05</div>
+      <div class="res-card-title">Dropout → Cognitive Reserve Insight</div>
+      <div class="res-card-desc">AI dropout — randomly silencing neurons to build robustness — directly parallels how cognitive reserve protects against neurodegeneration. Brains with higher synaptic redundancy tolerate more damage before symptoms appear, mirroring dropout's ensemble effect.</div>
+      <a class="res-tag" href="https://www.sciencedirect.com/science/article/pii/S0149763416302329" target="_blank" rel="noopener">📄 Stern et al. · Neuroscience & Biobehavioral Reviews 2017</a>
+    </div>
+    <div class="res-card helps">
+      <div class="res-card-num">06</div>
+      <div class="res-card-title">Neuromorphic Chips for Neural Repair</div>
+      <div class="res-card-desc">Intel's Loihi 2 (2024 Hala Point system: 1M digital neurons, 120M synapses per chip) and IBM's NorthPole neuromorphic chips mimic spiking neuron dynamics. These are driving brain-computer interface research for ALS, spinal injury, and neural prosthetics.</div>
+      <a class="res-tag" href="https://www.hpcwire.com/2024/04/24/intels-silicon-brain-system-a-blueprint-for-future-ai-computing-architectures/" target="_blank" rel="noopener">📄 Intel Hala Point · HPCwire / Intel Labs 2024</a>
+    </div>
+  </div>
+
+  <!-- WHERE ANALOGY BREAKS -->
+  <div style="height:48px;"></div>
+  <div class="reveal">
+    <p class="section-label" style="color:var(--warm);">✗ Where the Analogy Breaks Down for Treatment</p>
+  </div>
+  <div class="res-limits reveal">
+    <div class="res-limit-item">
+      <span class="res-limit-icon">🧬</span>
+      <div>
+        <div class="res-limit-title">No Protein Biology</div>
+        <div class="res-limit-desc">LLMs don't accumulate tau tangles or amyloid plaques — the physical proteins that physically kill neurons. No computational mirror exists for plaque clearance.</div>
+      </div>
+    </div>
+    <div class="res-limit-item">
+      <span class="res-limit-icon">🩸</span>
+      <div>
+        <div class="res-limit-title">No Vascular System</div>
+        <div class="res-limit-desc">Blood-brain barrier breakdown is central to many diseases. LLMs have no circulatory analog — so vascular dementia has no direct AI model.</div>
+      </div>
+    </div>
+    <div class="res-limit-item">
+      <span class="res-limit-icon">🛡️</span>
+      <div>
+        <div class="res-limit-title">No Glial Cells</div>
+        <div class="res-limit-desc">Astrocytes and microglia — the brain's immune and support cells — play a massive role in neurodegeneration. AI has no equivalent support architecture.</div>
+      </div>
+    </div>
+    <div class="res-limit-item">
+      <span class="res-limit-icon">⏳</span>
+      <div>
+        <div class="res-limit-title">LLMs Don't Age</div>
+        <div class="res-limit-desc">Oxidative stress, mitochondrial decay, and telomere shortening have no AI analog. Age-related neurodegeneration cannot be simulated by weight degradation alone.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div style="height:48px;"></div>
+  <div class="res-verdict reveal">
+    <div class="res-verdict-inner">
+      <div class="res-verdict-icon">⚗️</div>
+      <div class="res-verdict-title">The Analogy as a <span style="color:var(--bio)">Thinking Tool</span></div>
+      <div class="res-verdict-desc">The Brain↔LLM analogy is most powerful as a mathematical language for neuroscience — letting researchers describe, simulate and predict network failure. But treating actual disease requires going beyond the analogy into biology, chemistry and medicine that no LLM captures. The two fields are strongest together: AI as the model, biology as the ground truth.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>NeuraMirror · An interactive visualization by <span>Krishnamurthy Kandregula Innovation Lab</span></p>
+  <p style="margin-top:8px;font-size:10px;">Designed & Architected by Krishnamurthy Kandregula · Made by Claude</p>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+// HERO BRAIN CANVAS — organic node animation
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('brainCanvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const nodes = Array.from({length:28},(_,i)=>({
+    x: W/2 + Math.cos(i/28*Math.PI*2)*(50+Math.random()*60),
+    y: H/2 + Math.sin(i/28*Math.PI*2)*(40+Math.random()*50),
+    vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+    r:2+Math.random()*3, firing:false, ft:0
+  }));
+  function fireSome(){
+    nodes[Math.floor(Math.random()*nodes.length)].firing=true;
+  }
+  setInterval(fireSome,600);
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // connections
+    nodes.forEach((a,i)=>{
+      nodes.forEach((b,j)=>{
+        if(j<=i) return;
+        const d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<90){
+          const alpha = (1-d/90)*(a.firing||b.firing?0.6:0.12);
+          ctx.strokeStyle=`rgba(0,229,180,${alpha})`;
+          ctx.lineWidth=a.firing||b.firing?1.2:.5;
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+          if(a.firing&&!b.firing&&d<60){b.firing=true;b.ft=0;}
+        }
+      });
+    });
+    // nodes
+    nodes.forEach(n=>{
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<10||n.x>W-10) n.vx*=-1;
+      if(n.y<10||n.y>H-10) n.vy*=-1;
+      if(n.firing){
+        n.ft++;
+        if(n.ft>30) n.firing=false;
+        ctx.shadowBlur=12;ctx.shadowColor='#00e5b4';
+        ctx.fillStyle='#00e5b4';
+      } else {
+        ctx.shadowBlur=0;
+        ctx.fillStyle='rgba(0,229,180,0.5)';
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─────────────────────────────────────────────
+// HERO LLM CANVAS — grid transformer
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('llmCanvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const layers = [4,6,8,6,4];
+  const nodes = [];
+  layers.forEach((cnt,li)=>{
+    const x = 30+li*(W-60)/(layers.length-1);
+    for(let ni=0;ni<cnt;ni++){
+      const y = H/2 + (ni-(cnt-1)/2)*(H-40)/(Math.max(...layers));
+      nodes.push({x,y,li,ni,cnt,active:false,at:0});
+    }
+  });
+  function activateLayer(li){
+    nodes.filter(n=>n.li===li).forEach(n=>{n.active=true;n.at=0;});
+    if(li<layers.length-1) setTimeout(()=>activateLayer(li+1),200);
+  }
+  function pulse(){activateLayer(0);}
+  pulse(); setInterval(pulse,2200);
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // edges
+    nodes.forEach(a=>{
+      nodes.filter(b=>b.li===a.li+1).forEach(b=>{
+        const alpha = a.active&&b.active ? 0.4 : 0.06;
+        ctx.strokeStyle=`rgba(123,97,255,${alpha})`;
+        ctx.lineWidth=a.active&&b.active?.8:.3;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      });
+    });
+    // nodes
+    nodes.forEach(n=>{
+      n.at++;
+      if(n.at>40) n.active=false;
+      if(n.active){
+        ctx.shadowBlur=14;ctx.shadowColor='#7b61ff';
+        ctx.fillStyle='#7b61ff';
+      } else {
+        ctx.shadowBlur=0;ctx.fillStyle='rgba(123,97,255,0.35)';
+      }
+      ctx.beginPath();ctx.arc(n.x,n.y,n.active?5:3.5,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─────────────────────────────────────────────
+// BIOLOGICAL NEURON DIAGRAM
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('neuronCanvas');
+  const ctx = c.getContext('2d');
+  const W=c.width, H=c.height;
+  ctx.clearRect(0,0,W,H);
+
+  function label(x,y,txt,col){
+    ctx.fillStyle=col||'rgba(255,255,255,0.5)';
+    ctx.font='10px Space Mono';
+    ctx.fillText(txt,x,y);
+  }
+  // Dendrites
+  const dends=[[-50,-40],[-60,0],[-50,40],[-70,-20],[-70,20]];
+  dends.forEach(([dx,dy])=>{
+    ctx.strokeStyle='rgba(0,229,180,0.5)';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(70+dx,H/2+dy);ctx.lineTo(130,H/2);
+    ctx.stroke();
+  });
+  label(14,H/2-50,'Dendrites','rgba(0,229,180,0.7)');
+
+  // Cell body
+  const grad=ctx.createRadialGradient(140,H/2,0,140,H/2,28);
+  grad.addColorStop(0,'rgba(0,229,180,0.5)');
+  grad.addColorStop(1,'rgba(0,229,180,0.1)');
+  ctx.fillStyle=grad;
+  ctx.strokeStyle='#00e5b4';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(140,H/2,28,0,Math.PI*2);
+  ctx.fill();ctx.stroke();
+  label(122,H/2+4,'SOMA','rgba(0,229,180,0.9)');
+
+  // Axon
+  ctx.strokeStyle='rgba(0,229,180,0.6)';ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(168,H/2);ctx.lineTo(260,H/2);ctx.stroke();
+  label(195,H/2-10,'Axon','rgba(0,229,180,0.6)');
+
+  // Myelin sheaths
+  [185,205,225,245].forEach(x=>{
+    ctx.strokeStyle='rgba(0,229,180,0.25)';ctx.lineWidth=10;
+    ctx.beginPath();ctx.moveTo(x,H/2);ctx.lineTo(x+14,H/2);ctx.stroke();
+  });
+
+  // Terminals
+  [[260,-25],[260,0],[260,25]].forEach(([x,y])=>{
+    ctx.strokeStyle='rgba(0,229,180,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(260,H/2);ctx.lineTo(x,H/2+y);ctx.stroke();
+    ctx.fillStyle='#00e5b4';
+    ctx.beginPath();ctx.arc(x,H/2+y,5,0,Math.PI*2);ctx.fill();
+  });
+  label(265,H/2-34,'Terminals','rgba(0,229,180,0.6)');
+
+  // Signal pulse animation
+  let t=0;
+  function animate(){
+    // clear pulse area
+    ctx.clearRect(155,H/2-20,115,40);
+    // redraw axon
+    ctx.strokeStyle='rgba(0,229,180,0.4)';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(168,H/2);ctx.lineTo(260,H/2);ctx.stroke();
+    [185,205,225,245].forEach(x=>{
+      ctx.strokeStyle='rgba(0,229,180,0.2)';ctx.lineWidth=10;
+      ctx.beginPath();ctx.moveTo(x,H/2);ctx.lineTo(x+14,H/2);ctx.stroke();
+    });
+    // pulse dot
+    const px=168+(260-168)*(t%1);
+    ctx.shadowBlur=10;ctx.shadowColor='#00e5b4';
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(px,H/2,4,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+    t+=0.008;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ─────────────────────────────────────────────
+// ARTIFICIAL NEURON / PERCEPTRON
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('perceptronCanvas');
+  const ctx = c.getContext('2d');
+  const W=c.width, H=c.height;
+  const inputs=[{y:40,w:0.8},{y:90,w:0.3},{y:140,w:-0.5},{y:180,w:0.9}];
+  const col='rgba(123,97,255,';
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    // input lines
+    inputs.forEach((inp,i)=>{
+      const pulse=Math.sin(t*2+i*1.2)*.5+.5;
+      ctx.strokeStyle=col+(0.2+pulse*0.5)+')';
+      ctx.lineWidth=1+pulse*1.5;
+      ctx.beginPath();ctx.moveTo(55,inp.y);ctx.lineTo(155,H/2);ctx.stroke();
+
+      // weight label
+      ctx.fillStyle=inp.w>0?'rgba(0,229,180,0.8)':'rgba(255,100,100,0.8)';
+      ctx.font='bold 10px Space Mono';
+      ctx.fillText('w='+(inp.w>0?'+':'')+inp.w.toFixed(1),68,inp.y-6);
+
+      // input node
+      ctx.fillStyle=col+'0.7)';
+      ctx.beginPath();ctx.arc(55,inp.y,10,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='9px Space Mono';
+      ctx.fillText('x'+(i+1),49,inp.y+3);
+    });
+
+    // summation node
+    const sg=ctx.createRadialGradient(170,H/2,0,170,H/2,32);
+    sg.addColorStop(0,'rgba(123,97,255,0.6)');
+    sg.addColorStop(1,'rgba(123,97,255,0.1)');
+    ctx.fillStyle=sg;ctx.strokeStyle='#7b61ff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(170,H/2,32,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px Space Mono';ctx.textAlign='center';
+    ctx.fillText('Σ',170,H/2-4);
+    ctx.font='8px Space Mono';ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.fillText('activation',170,H/2+10);
+    ctx.textAlign='left';
+
+    // output line
+    const opulse=Math.sin(t*2+4)*.5+.5;
+    ctx.strokeStyle=col+(0.3+opulse*0.5)+')';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(202,H/2);ctx.lineTo(310,H/2);ctx.stroke();
+
+    // output node
+    ctx.fillStyle=col+'0.8)';ctx.shadowBlur=opulse*15;ctx.shadowColor='#7b61ff';
+    ctx.beginPath();ctx.arc(315,H/2,12,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='9px Space Mono';
+    ctx.fillText('ŷ',310,H/2+3);
+
+    ctx.fillStyle='rgba(123,97,255,0.7)';ctx.font='10px Space Mono';
+    ctx.fillText('Output',308,H/2-18);
+
+    requestAnimationFrame(()=>draw(t+0.016));
+  }
+  draw(0);
+})();
+
+// ─────────────────────────────────────────────
+// ATTENTION MECHANISM CANVAS
+// ─────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('attentionCanvas');
+  const ctx=c.getContext('2d');
+  const W=c.offsetWidth||900; c.width=W;
+  const H=c.height=180;
+  const tokens=['The','cat','sat','on','the','mat','.'];
+  const N=tokens.length;
+  const spacing=W/(N+1);
+  let t=0, focusIdx=0;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const xs=tokens.map((_,i)=>(i+1)*spacing);
+
+    // attention lines from focusIdx
+    xs.forEach((x,i)=>{
+      if(i===focusIdx) return;
+      // fake attention weight
+      const w=Math.abs(Math.sin((focusIdx-i)*0.7+t*0.5));
+      ctx.strokeStyle=`rgba(123,97,255,${w*0.6})`;
+      ctx.lineWidth=w*3;
+      ctx.beginPath();
+      ctx.moveTo(xs[focusIdx],60);
+      const cpx=(xs[focusIdx]+x)/2;
+      ctx.quadraticCurveTo(cpx,20,x,60);
+      ctx.stroke();
+    });
+
+    // token boxes
+    tokens.forEach((tok,i)=>{
+      const x=xs[i], active=i===focusIdx;
+      ctx.shadowBlur=active?16:0;
+      ctx.shadowColor='#7b61ff';
+      ctx.fillStyle=active?'#7b61ff':'rgba(123,97,255,0.15)';
+      ctx.strokeStyle=active?'#7b61ff':'rgba(123,97,255,0.4)';
+      ctx.lineWidth=1.5;
+      const bw=40,bh=28;
+      ctx.beginPath();
+      ctx.roundRect(x-bw/2,45,bw,bh,4);
+      ctx.fill();ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.fillStyle=active?'#fff':'rgba(255,255,255,0.6)';
+      ctx.font=`${active?'bold ':''} 11px Space Mono`;
+      ctx.textAlign='center';
+      ctx.fillText(tok,x,64);
+    });
+
+    // labels
+    ctx.textAlign='left';
+    ctx.fillStyle='rgba(123,97,255,0.5)';ctx.font='9px Space Mono';
+    ctx.fillText('QUERY TOKEN →',10,18);
+    ctx.fillStyle='rgba(0,229,180,0.5)';
+    ctx.fillText('← ATTENDING TO CONTEXT',W-160,18);
+
+    t+=0.016;
+    if(Math.floor(t*0.5)!==Math.floor((t-0.016)*0.5)){
+      focusIdx=(focusIdx+1)%N;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+
+// ─────────────────────────────────────────────
+// ANALOGY CANVAS — animated side-by-side rows
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('analogyCanvas');
+  if(!c) return;
+  function resize(){
+    c.width = c.offsetWidth;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const PAIRS = [
+    {bio:'🧠 Neuron', bioSub:'86B biological cells\nthat fire signals', ai:'Artificial Node 🤖', aiSub:'Math unit: weighted sum\n+ activation function'},
+    {bio:'⚡ Synapse', bioSub:'Junction strengthened\nor weakened by use', ai:'Weight Parameter 🎛️', aiSub:'Number updated by\nbackpropagation'},
+    {bio:'👁️ Visual Cortex', bioSub:'Edges → Shapes → Objects\n→ Meaning (layered)', ai:'Deep Network Layers 📊', aiSub:'Tokens → Embeddings\n→ Context → Output'},
+    {bio:'🎯 Selective Attention', bioSub:'Prefrontal cortex focuses\non relevant stimuli', ai:'Attention Mechanism 🔦', aiSub:'Transformer scores each\ntoken by relevance'},
+    {bio:'💾 Long-Term Memory', bioSub:'Hippocampus consolidates\nepisodic knowledge', ai:'Pre-trained Weights 🗄️', aiSub:'Billions of params encode\nworld knowledge'},
+    {bio:'🗣️ Broca\'s Area', bioSub:'Language production,\ngrammar construction', ai:'Decoder / Output Head 📝', aiSub:'Generates next-token\nprobability distribution'},
+    {bio:'🌱 Neuroplasticity', bioSub:'Brain rewires based\non new experiences', ai:'Fine-tuning / RLHF 🔧', aiSub:'Weights updated on\nnew domain data'},
+  ];
+
+  let hovered = -1;
+  let animT = 0;
+
+  c.addEventListener('mousemove', e => {
+    const rect = c.getBoundingClientRect();
+    const y = (e.clientY - rect.top) * (c.height / rect.height);
+    const ROW_H = c.height / PAIRS.length;
+    hovered = Math.floor(y / ROW_H);
+  });
+  c.addEventListener('mouseleave', () => { hovered = -1; });
+  c.addEventListener('touchstart', e => {
+    const rect = c.getBoundingClientRect();
+    const y = (e.touches[0].clientY - rect.top) * (c.height / rect.height);
+    const ROW_H = c.height / PAIRS.length;
+    hovered = Math.floor(y / ROW_H);
+  }, {passive:true});
+
+  function wrapText(ctx, text, x, y, maxW, lineH) {
+    const lines = text.split('\n');
+    lines.forEach((line, i) => ctx.fillText(line, x, y + i * lineH));
+  }
+
+  function draw() {
+    const W = c.width, H = c.height;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    const ROW_H = H / PAIRS.length;
+    const MID = W / 2;
+    animT += 0.018;
+
+    PAIRS.forEach((p, i) => {
+      const y = i * ROW_H;
+      const active = i === hovered;
+      const pulse = Math.sin(animT + i * 0.9) * 0.5 + 0.5;
+
+      // row bg
+      ctx.fillStyle = active ? 'rgba(0,229,180,0.07)' : (i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent');
+      ctx.fillRect(0, y, W, ROW_H);
+
+      // left bio panel
+      const bioX = MID * 0.5;
+      ctx.fillStyle = active ? '#00e5b4' : `rgba(0,229,180,${0.55 + pulse * 0.3})`;
+      ctx.font = `bold ${W < 500 ? 11 : 13}px Syne`;
+      ctx.textAlign = 'center';
+      ctx.fillText(p.bio, bioX, y + ROW_H * 0.38);
+      ctx.fillStyle = 'rgba(180,255,230,0.45)';
+      ctx.font = `${W < 500 ? 9 : 10}px Space Mono`;
+      wrapText(ctx, p.bioSub, bioX, y + ROW_H * 0.55, MID - 20, 14);
+
+      // right ai panel
+      const aiX = MID + MID * 0.5;
+      ctx.fillStyle = active ? '#a78bfa' : `rgba(123,97,255,${0.55 + pulse * 0.3})`;
+      ctx.font = `bold ${W < 500 ? 11 : 13}px Syne`;
+      ctx.fillText(p.ai, aiX, y + ROW_H * 0.38);
+      ctx.fillStyle = 'rgba(200,190,255,0.45)';
+      ctx.font = `${W < 500 ? 9 : 10}px Space Mono`;
+      wrapText(ctx, p.aiSub, aiX, y + ROW_H * 0.55, MID - 20, 14);
+
+      // center bridge
+      const bridgeAlpha = active ? 0.9 : 0.25 + pulse * 0.2;
+      const grad = ctx.createLinearGradient(MID - 28, 0, MID + 28, 0);
+      grad.addColorStop(0, `rgba(0,229,180,${bridgeAlpha})`);
+      grad.addColorStop(1, `rgba(123,97,255,${bridgeAlpha})`);
+      ctx.fillStyle = grad;
+      ctx.font = `bold ${active ? 18 : 15}px Syne`;
+      ctx.fillText('≈', MID, y + ROW_H * 0.5 + 6);
+
+      // divider line
+      if(i < PAIRS.length - 1) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(20, y + ROW_H);
+        ctx.lineTo(W - 20, y + ROW_H);
+        ctx.stroke();
+      }
+
+      // active left connector dot trail
+      if(active) {
+        const dotX = MID - 80 + Math.sin(animT * 3) * 20;
+        ctx.shadowBlur = 10; ctx.shadowColor = '#00e5b4';
+        ctx.fillStyle = '#00e5b4';
+        ctx.beginPath(); ctx.arc(dotX, y + ROW_H * 0.42, 4, 0, Math.PI*2); ctx.fill();
+        const dotX2 = MID + 80 + Math.sin(animT * 3 + Math.PI) * 20;
+        ctx.shadowColor = '#7b61ff';
+        ctx.fillStyle = '#7b61ff';
+        ctx.beginPath(); ctx.arc(dotX2, y + ROW_H * 0.42, 4, 0, Math.PI*2); ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    });
+
+    // Column headers
+    ctx.fillStyle = 'rgba(0,229,180,0.4)';
+    ctx.font = '9px Space Mono';
+    ctx.letterSpacing = '2px';
+    ctx.textAlign = 'center';
+    ctx.fillText('HUMAN BRAIN', MID * 0.5, 10);
+    ctx.fillStyle = 'rgba(123,97,255,0.4)';
+    ctx.fillText('LLM / NEURAL NET', MID + MID * 0.5, 10);
+    ctx.textAlign = 'left';
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─────────────────────────────────────────────
+// PIPELINE CANVAS — auto-running signal flow
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('pipelineCanvas');
+  if(!c) return;
+  function resize(){ c.width = c.offsetWidth; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const BIO_STAGES = ['Sensory\nInput','Thalamus\nFilter','Cortex\nProcess','Association\nArea','Response\nOutput'];
+  const AI_STAGES  = ['Token\nInput','Embedding\nLayer','Attention\nHeads','FFN\nLayers','Output\nToken'];
+  let t = 0;
+
+  function draw(){
+    const W = c.width, H = c.height;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    t += 0.012;
+
+    const N = 5;
+    const PAD = 40;
+    const spacing = (W - PAD*2) / (N - 1);
+    const bioY = H * 0.28, aiY = H * 0.72;
+
+    // center label
+    ctx.fillStyle = 'rgba(255,107,53,0.5)';
+    ctx.font = 'bold 10px Space Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('── Both propagate layer-by-layer ──', W/2, H/2 + 4);
+
+    // divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1; ctx.setLineDash([4,8]);
+    ctx.beginPath(); ctx.moveTo(PAD, H/2); ctx.lineTo(W-PAD, H/2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    [BIO_STAGES, AI_STAGES].forEach((stages, ri) => {
+      const baseY = ri === 0 ? bioY : aiY;
+      const col = ri === 0 ? '#00e5b4' : '#7b61ff';
+      const glowCol = ri === 0 ? 'rgba(0,229,180,0.4)' : 'rgba(123,97,255,0.4)';
+
+      // row label
+      ctx.fillStyle = col;
+      ctx.font = 'bold 9px Space Mono';
+      ctx.textAlign = 'left';
+      ctx.fillText(ri === 0 ? '🧠 BRAIN' : '🤖 LLM', 4, baseY - 36);
+
+      stages.forEach((s, i) => {
+        const x = PAD + i * spacing;
+        // wave progress: each stage activates in sequence, looping
+        const wave = (t % (N + 1));
+        const active = wave > i && wave < i + 1.8;
+        const intensity = active ? Math.sin((wave - i) * Math.PI / 1.8) : 0;
+
+        // connector
+        if(i < N - 1){
+          ctx.strokeStyle = intensity > 0.3 ? col : 'rgba(255,255,255,0.08)';
+          ctx.lineWidth = 1 + intensity * 2;
+          ctx.beginPath(); ctx.moveTo(x + 20, baseY); ctx.lineTo(x + spacing - 20, baseY); ctx.stroke();
+
+          // travelling dot
+          if(intensity > 0.1){
+            const dotFrac = (wave - i) / 1.8;
+            const dotX = x + 20 + (spacing - 40) * dotFrac;
+            ctx.shadowBlur = 8; ctx.shadowColor = col;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath(); ctx.arc(dotX, baseY, 3.5, 0, Math.PI*2); ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        }
+
+        // node circle
+        ctx.shadowBlur = intensity * 20; ctx.shadowColor = col;
+        ctx.fillStyle = intensity > 0.3 ? col : 'rgba(255,255,255,0.07)';
+        ctx.strokeStyle = intensity > 0.1 ? col : 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(x, baseY, 18, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // step number
+        ctx.fillStyle = intensity > 0.3 ? '#fff' : (ri===0?'rgba(0,229,180,0.5)':'rgba(123,97,255,0.5)');
+        ctx.font = `bold 11px Syne`;
+        ctx.textAlign = 'center';
+        ctx.fillText(i + 1, x, baseY + 4);
+
+        // label below/above
+        const labelY = ri === 0 ? baseY + 34 : baseY - 22;
+        ctx.fillStyle = intensity > 0.3 ? '#fff' : 'rgba(255,255,255,0.3)';
+        ctx.font = '8px Space Mono';
+        s.split('\n').forEach((line, li) => {
+          ctx.fillText(line, x, labelY + li * 12);
+        });
+      });
+    });
+
+    ctx.textAlign = 'left';
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─────────────────────────────────────────────
+// STAT BARS
+// ─────────────────────────────────────────────
+const stats=[
+  {title:'Scale of Connections',items:[
+    {name:'🧠 Brain (~86B neurons)',val:86,max:200,col:'var(--bio)',display:'86 Billion neurons'},
+    {name:'🤖 GPT-4 (est. ~1.8T params)',val:180,max:200,col:'var(--ai)',display:'~1.8 Trillion params'},
+  ]},
+  {title:'Energy Consumption',items:[
+    {name:'🧠 Human Brain',val:20,max:1000,col:'var(--bio)',display:'~20 Watts'},
+    {name:'🤖 LLM Inference (A100)',val:400,max:1000,col:'var(--ai)',display:'~400 Watts'},
+  ]},
+  {title:'Learning Speed (New concept)',items:[
+    {name:'🧠 Human (1 example)',val:95,max:100,col:'var(--bio)',display:'1 example'},
+    {name:'🤖 LLM (requires many)',val:15,max:100,col:'var(--ai)',display:'Millions needed'},
+  ]},
+  {title:'Context Window',items:[
+    {name:'🧠 Human Working Memory',val:7,max:200,col:'var(--bio)',display:'~7 items'},
+    {name:'🤖 Claude / GPT-4',val:200,max:200,col:'var(--ai)',display:'200k tokens'},
+  ]},
+];
+
+const sg=document.getElementById('statGrid');
+stats.forEach(s=>{
+  const card=document.createElement('div');
+  card.className='stat-card';
+  card.innerHTML=`<div class="stat-label">${s.title}</div>`+
+    s.items.map(it=>`
+      <div class="stat-row"><span class="stat-name">${it.name}</span><span class="stat-val" style="color:${it.col}">${it.display}</span></div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" data-w="${(it.val/it.max*100).toFixed(0)}%" style="background:${it.col};width:0%"></div></div>
+    `).join('');
+  sg.appendChild(card);
+});
+
+// ─────────────────────────────────────────────
+// SCROLL REVEAL + BAR ANIMATION
+// ─────────────────────────────────────────────
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.stat-bar-fill').forEach(b=>{
+        setTimeout(()=>b.style.width=b.dataset.w,100);
+      });
+    }
+  });
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ─────────────────────────────────────────────
+// NAV TABS → SCROLL
+// ─────────────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const target=document.getElementById(tab.dataset.target);
+    if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+// Update active tab on scroll
+const sections=['analogies','flow','interactive','learning','compare','diverge','research'];
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&window.scrollY>=el.offsetTop-120) cur=id;
+  });
+  document.querySelectorAll('.nav-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.target===cur);
+  });
+},{passive:true});
+
+// ─────────────────────────────────────────────
+// BRIDGE CANVAS — animated connectors
+// ─────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('bridgeCanvas');
+  if(!c) return;
+  let t = 0;
+  const N = 5;
+  function draw(){
+    const W = c.width, H = c.height;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+    t += 0.025;
+    const rowH = H / N;
+    for(let i = 0; i < N; i++){
+      const cy = rowH * i + rowH / 2;
+      const pulse = Math.sin(t + i * 0.8) * 0.5 + 0.5;
+      // left dot
+      ctx.fillStyle = `rgba(0,229,180,${0.4 + pulse * 0.5})`;
+      ctx.beginPath(); ctx.arc(10, cy, 5, 0, Math.PI*2); ctx.fill();
+      // right dot
+      ctx.fillStyle = `rgba(123,97,255,${0.4 + pulse * 0.5})`;
+      ctx.beginPath(); ctx.arc(W-10, cy, 5, 0, Math.PI*2); ctx.fill();
+      // connecting line with gradient
+      const grad = ctx.createLinearGradient(10,cy,W-10,cy);
+      grad.addColorStop(0,`rgba(0,229,180,${0.2+pulse*0.4})`);
+      grad.addColorStop(0.5,`rgba(255,107,53,${0.3+pulse*0.3})`);
+      grad.addColorStop(1,`rgba(123,97,255,${0.2+pulse*0.4})`);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(15,cy); ctx.lineTo(W-15,cy); ctx.stroke();
+      // travelling dot
+      const dotX = 15 + (W-30)*((t*0.3 + i*0.2) % 1);
+      ctx.shadowBlur = 6; ctx.shadowColor = '#ff6b35';
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(dotX, cy, 3, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ─────────────────────────────────────────────
+// PWA SERVICE WORKER
+// ─────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  const sw=`
+    const CACHE='neuramirror-v1';
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./','/index.html']))));
+    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+  `;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
+</body>
+</html>
