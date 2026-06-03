@@ -361,11 +361,151 @@
   }
   .res-tag[href]:hover{background:rgba(0,229,180,0.2);color:var(--bio);}
 
+  /* ── INTRO SCREEN ── */
+  #introScreen{
+    position:fixed;inset:0;z-index:10000;
+    background:#07070f;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity .8s ease, visibility .8s ease;
+  }
+  #introScreen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+  .intro-canvas-wrap{position:relative;width:160px;height:160px;margin-bottom:32px;}
+  #introLogoCanvas{width:160px;height:160px;}
+  .intro-title{
+    font-family:'Syne',sans-serif;font-size:clamp(32px,6vw,56px);font-weight:800;
+    letter-spacing:-1px;text-align:center;opacity:0;
+    animation:introTitle 0.8s 0.6s ease forwards;
+  }
+  .intro-title .bio{color:var(--bio);}
+  .intro-title .ai{color:var(--ai);}
+  .intro-sub{
+    font-size:11px;letter-spacing:4px;text-transform:uppercase;
+    color:var(--muted);margin-top:12px;text-align:center;
+    opacity:0;animation:introTitle 0.8s 0.9s ease forwards;
+  }
+  .intro-bar-wrap{
+    width:200px;height:2px;background:rgba(255,255,255,0.08);
+    border-radius:2px;margin-top:40px;overflow:hidden;
+    opacity:0;animation:introTitle 0.5s 1.1s ease forwards;
+  }
+  .intro-bar{
+    height:100%;width:0%;border-radius:2px;
+    background:linear-gradient(90deg,var(--bio),var(--ai));
+    animation:introLoad 1.6s 1.2s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  @keyframes introTitle{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes introLoad{from{width:0%;}to{width:100%;}}
+
+  /* ── TIMELINE ── */
+  #timeline{padding:80px 20px;max-width:1100px;margin:0 auto;}
+  .tl-track{position:relative;padding:0 0 0 0;}
+  .tl-line{
+    position:absolute;left:50%;top:0;bottom:0;
+    width:2px;transform:translateX(-50%);
+    background:linear-gradient(to bottom,var(--bio),var(--ai));
+    opacity:0.2;
+  }
+  @media(max-width:700px){
+    .tl-line{left:20px;}
+  }
+  .tl-item{
+    display:grid;grid-template-columns:1fr 60px 1fr;
+    align-items:center;gap:0;margin-bottom:40px;
+    position:relative;
+  }
+  @media(max-width:700px){
+    .tl-item{grid-template-columns:40px 1fr;margin-bottom:28px;}
+    .tl-item .tl-right{display:none;}
+    .tl-item.right .tl-left{display:none;}
+    .tl-item.right .tl-right{display:block;}
+    .tl-item.right{grid-template-columns:40px 1fr;}
+  }
+  .tl-left{text-align:right;padding-right:28px;}
+  .tl-right{text-align:left;padding-left:28px;}
+  .tl-center{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;}
+  .tl-dot{
+    width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+    border:2px solid var(--border);background:var(--card);
+    transition:all .3s;
+  }
+  .tl-item:hover .tl-dot{transform:scale(1.15);border-color:var(--bio);box-shadow:var(--glow-bio);}
+  .tl-year{
+    font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
+    letter-spacing:1px;color:var(--muted);
+  }
+  .tl-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:18px 20px;
+    transition:all .25s;
+  }
+  .tl-item:hover .tl-card{border-color:rgba(0,229,180,0.25);background:#151530;}
+  .tl-card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:6px;}
+  .tl-card-desc{font-size:11px;color:var(--muted);line-height:1.75;}
+  .tl-card-tag{
+    display:inline-block;margin-top:8px;padding:3px 8px;border-radius:3px;
+    font-size:9px;letter-spacing:1px;font-weight:700;
+  }
+  .tag-bio{background:rgba(0,229,180,0.12);color:var(--bio);}
+  .tag-ai{background:rgba(123,97,255,0.12);color:var(--ai);}
+  .tag-both{background:rgba(255,107,53,0.12);color:var(--warm);}
+
+  /* ── LIVE PAPERS ── */
+  .papers-status{
+    font-size:11px;color:var(--muted);margin-bottom:20px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .papers-dot{
+    width:7px;height:7px;border-radius:50%;background:var(--bio);
+    animation:pulse 1.5s infinite;flex-shrink:0;
+  }
+  .papers-dot.loading{background:var(--warm);}
+  .papers-dot.error{background:#f87171;animation:none;}
+  .live-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+  .paper-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:20px;
+    transition:transform .2s,box-shadow .2s;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .paper-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+  .paper-card-title{
+    font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+    line-height:1.5;color:var(--text);
+  }
+  .paper-card-authors{font-size:10px;color:var(--muted);}
+  .paper-card-summary{font-size:11px;color:var(--muted);line-height:1.75;flex:1;}
+  .paper-card-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .paper-card-date{font-size:9px;color:var(--muted);}
+  .paper-card-link{
+    font-size:9px;letter-spacing:1px;color:var(--ai);
+    border:1px solid rgba(123,97,255,0.3);padding:3px 8px;border-radius:3px;
+    text-decoration:none;transition:background .2s;
+  }
+  .paper-card-link:hover{background:rgba(123,97,255,0.15);}
+  .paper-skeleton{
+    background:linear-gradient(90deg,var(--card) 25%,rgba(255,255,255,0.04) 50%,var(--card) 75%);
+    background-size:200% 100%;animation:shimmer 1.5s infinite;
+    border-radius:6px;height:14px;margin-bottom:8px;
+  }
+  @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
   .reveal{opacity:0;transform:translateY(32px);transition:all .7s cubic-bezier(.16,1,.3,1);}
   .reveal.visible{opacity:1;transform:none;}
 </style>
 </head>
 <body>
+
+<!-- ══ INTRO SCREEN ══ -->
+<div id="introScreen">
+  <div class="intro-canvas-wrap">
+    <canvas id="introLogoCanvas" width="320" height="320"></canvas>
+  </div>
+  <div class="intro-title"><span class="bio">Neura</span><span style="color:var(--muted);font-weight:400;">×</span><span class="ai">Mirror</span></div>
+  <div class="intro-sub">Neuroscience × Artificial Intelligence</div>
+  <div class="intro-bar-wrap"><div class="intro-bar"></div></div>
+</div>
 
 <!-- HERO -->
 <div class="hero">
@@ -401,6 +541,8 @@
     <button class="nav-tab" data-target="learning">Learning</button>
     <button class="nav-tab" data-target="compare">Stats</button>
     <button class="nav-tab" data-target="diverge">Differences</button>
+    <button class="nav-tab" data-target="timeline">⏳ Timeline</button>
+    <button class="nav-tab" data-target="livepapers">📡 Live Papers</button>
     <button class="nav-tab" data-target="research">🔬 Research</button>
   </div>
 </div>
@@ -572,10 +714,188 @@
   </div>
 </section>
 
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="reveal">
+    <p class="section-label">// Layer 07 · History</p>
+    <h2 class="section-title">Brain-Inspired AI<br><span style="color:var(--bio)">1958</span> → <span style="color:var(--ai)">Today</span></h2>
+    <p style="font-size:12px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:48px;">Every major AI breakthrough borrowed something from the brain. Here's how the two fields co-evolved over six decades.</p>
+  </div>
+  <div class="tl-track reveal">
+    <div class="tl-line"></div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">Perceptron</div>
+          <div class="tl-card-desc">Frank Rosenblatt at Cornell builds the first trainable artificial neuron, inspired directly by McCulloch-Pitts neuron model of 1943. Learns to classify images using weighted inputs — the first hardware AI.</div>
+          <span class="tl-card-tag tag-both">Brain → AI</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">🧠</div><div class="tl-year">1958</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">❄️</div><div class="tl-year">1969</div></div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-card-title">First AI Winter</div>
+          <div class="tl-card-desc">Minsky & Papert's "Perceptrons" book exposes XOR limitation. Funding dries up. The brain analogy seemed too simplistic — researchers abandon neural approaches for symbolic AI for a decade.</div>
+          <span class="tl-card-tag tag-ai">AI Setback</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">Backpropagation</div>
+          <div class="tl-card-desc">Rumelhart, Hinton & Williams publish backprop, enabling multi-layer networks to learn. Directly modelled on synaptic error correction signals hypothesised in biological neural systems.</div>
+          <span class="tl-card-tag tag-both">Brain-Inspired</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">⚡</div><div class="tl-year">1986</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">👁️</div><div class="tl-year">1989</div></div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-card-title">Convolutional Networks</div>
+          <div class="tl-card-desc">LeCun's LeNet applies CNNs to digit recognition — directly modelled on Hubel & Wiesel's 1959 discovery of hierarchical edge detectors in the visual cortex. V1 → V2 → IT cortex becomes Conv → Pool → FC.</div>
+          <span class="tl-card-tag tag-both">Visual Cortex → CNN</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">Long Short-Term Memory</div>
+          <div class="tl-card-desc">Hochreiter & Schmidhuber's LSTM introduces gated memory cells — inspired by how hippocampal circuits selectively consolidate and forget information over time. Solves vanishing gradient by mimicking biological memory gating.</div>
+          <span class="tl-card-tag tag-both">Hippocampus → LSTM</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">💾</div><div class="tl-year">1997</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">🚀</div><div class="tl-year">2012</div></div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-card-title">Deep Learning Revolution</div>
+          <div class="tl-card-desc">AlexNet wins ImageNet by a 10% margin using deep CNNs on GPUs. Hinton, LeCun & Bengio's decades of brain-inspired work suddenly scales. The ventral visual stream is now computationally reproducible for the first time.</div>
+          <span class="tl-card-tag tag-ai">Deep Learning Era</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">Dropout Regularisation</div>
+          <div class="tl-card-desc">Srivastava & Hinton introduce dropout — randomly silencing neurons during training. Later linked to cognitive reserve: brains with more redundant connections tolerate more neurodegeneration before symptoms appear.</div>
+          <span class="tl-card-tag tag-both">AI → Neuroscience</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">🎲</div><div class="tl-year">2014</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">🎯</div><div class="tl-year">2017</div></div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-card-title">Transformer & Attention</div>
+          <div class="tl-card-desc">"Attention Is All You Need" (Vaswani et al., Google Brain) replaces recurrence with self-attention — mirroring how the prefrontal cortex dynamically weights sensory inputs. Every modern LLM is built on this architecture.</div>
+          <span class="tl-card-tag tag-both">PFC Attention → Transformer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">EWC — Catastrophic Forgetting Solved</div>
+          <div class="tl-card-desc">DeepMind's Elastic Weight Consolidation paper demonstrates AI can learn sequentially without forgetting — by protecting important weights, mimicking synaptic consolidation. Directly bridges AI to Alzheimer's memory research.</div>
+          <span class="tl-card-tag tag-both">Synapse → EWC</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">🔗</div><div class="tl-year">2017</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">🌐</div><div class="tl-year">2020</div></div>
+      <div class="tl-right">
+        <div class="tl-card">
+          <div class="tl-card-title">GPT-3 & Large Language Models</div>
+          <div class="tl-card-desc">175B parameter models show emergent abilities — reasoning, analogy, few-shot learning — not explicitly trained. Mirrors how cortical column formation gives rise to abstract thought beyond the sum of individual neurons.</div>
+          <span class="tl-card-tag tag-ai">Emergent Cognition</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-card">
+          <div class="tl-card-title">AlphaFold2 — Protein Revolution</div>
+          <div class="tl-card-desc">Neural networks predict protein folding with atomic accuracy — cracking a 50-year biology problem. Opens direct path to drug discovery for tau/amyloid proteins causing Alzheimer's and Parkinson's. 200M+ structures released.</div>
+          <span class="tl-card-tag tag-both">AI → Medicine</span>
+        </div>
+      </div>
+      <div class="tl-center"><div class="tl-dot">🧬</div><div class="tl-year">2021</div></div>
+      <div class="tl-right"></div>
+    </div>
+
+    <div class="tl-item right">
+      <div class="tl-left"></div>
+      <div class="tl-center"><div class="tl-dot">✨</div><div class="tl-year">Now</div></div>
+      <div class="tl-right">
+        <div class="tl-card" style="border-color:rgba(0,229,180,0.3);">
+          <div class="tl-card-title">Neuromorphic AI + BCI</div>
+          <div class="tl-card-desc">Intel Loihi 2, IBM NorthPole, and BrainScaleS chips run spiking neural networks at biological efficiency. Brain-computer interfaces (Neuralink, BrainGate) begin restoring motor function in ALS patients. The loop closes — AI helping repair the brain.</div>
+          <span class="tl-card-tag tag-both">Full Circle</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE PAPERS -->
+<section id="livepapers">
+  <div class="reveal">
+    <p class="section-label">// Layer 08 · Live Feed</p>
+    <h2 class="section-title">Latest <span style="color:var(--ai)">Research</span> Papers</h2>
+    <p style="font-size:12px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:8px;">Live feed from arXiv — most recent papers on brain-inspired AI, neurodegeneration + ML, and neural interfaces. Fetched fresh on every load.</p>
+    <div class="papers-status" id="papersStatus">
+      <div class="papers-dot loading" id="papersDot"></div>
+      <span id="papersStatusText">Fetching latest papers from arXiv…</span>
+    </div>
+  </div>
+  <div class="live-grid reveal" id="liveGrid">
+    <!-- skeleton loaders -->
+    <div class="paper-card" id="skel1"><div class="paper-skeleton" style="width:80%"></div><div class="paper-skeleton" style="width:60%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+    <div class="paper-card" id="skel2"><div class="paper-skeleton" style="width:75%"></div><div class="paper-skeleton" style="width:55%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+    <div class="paper-card" id="skel3"><div class="paper-skeleton" style="width:85%"></div><div class="paper-skeleton" style="width:65%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+    <div class="paper-card" id="skel4"><div class="paper-skeleton" style="width:70%"></div><div class="paper-skeleton" style="width:60%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+    <div class="paper-card" id="skel5"><div class="paper-skeleton" style="width:80%"></div><div class="paper-skeleton" style="width:50%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+    <div class="paper-card" id="skel6"><div class="paper-skeleton" style="width:78%"></div><div class="paper-skeleton" style="width:58%"></div><div class="paper-skeleton" style="width:100%;height:60px"></div></div>
+  </div>
+</section>
+
 <!-- RESEARCH -->
 <section id="research">
   <div class="reveal">
-    <p class="section-label">// Layer 07 · Neuro × AI Frontier</p>
+    <p class="section-label">// Layer 09 · Neuro × AI Frontier</p>
     <h2 class="section-title">Degenerative Neurons<br><span style="color:var(--warm)">vs</span> LLM Weight Loss</h2>
     <p style="font-size:12px;color:var(--muted);max-width:680px;line-height:1.9;margin-bottom:24px;">
       The Brain↔LLM analogy opens a powerful lens for neurodegeneration research — giving scientists a mathematical framework to model, predict, and simulate what goes wrong when neurons die.
@@ -1319,7 +1639,7 @@ document.querySelectorAll('.nav-tab').forEach(tab=>{
 });
 
 // Update active tab on scroll
-const sections=['analogies','flow','interactive','learning','compare','diverge','research'];
+const sections=['analogies','flow','interactive','learning','compare','diverge','timeline','livepapers','research'];
 window.addEventListener('scroll',()=>{
   let cur='';
   sections.forEach(id=>{
@@ -1330,6 +1650,185 @@ window.addEventListener('scroll',()=>{
     t.classList.toggle('active',t.dataset.target===cur);
   });
 },{passive:true});
+
+// ─────────────────────────────────────────────
+// INTRO SCREEN — animated logo + dismiss
+// ─────────────────────────────────────────────
+(function(){
+  const screen = document.getElementById('introScreen');
+  const canvas = document.getElementById('introLogoCanvas');
+  const ctx = canvas.getContext('2d');
+  const S = 320;
+  let t = 0, dismissed = false;
+
+  // Bio nodes
+  const bNodes = Array.from({length:10}, (_,i) => ({
+    x: 60 + Math.random()*80, y: 40 + Math.random()*240,
+    vx:(Math.random()-.5)*.8, vy:(Math.random()-.5)*.8,
+    r:2+Math.random()*3, firing:false, ft:0
+  }));
+  // AI grid
+  const aLayers=[2,3,3,2];
+  const aNodes=[];
+  aLayers.forEach((cnt,li)=>{
+    for(let ni=0;ni<cnt;ni++){
+      aNodes.push({x:195+li*35, y:S/2+(ni-(cnt-1)/2)*55, li, active:false, at:0});
+    }
+  });
+
+  function fireBio(){ bNodes[Math.floor(Math.random()*bNodes.length)].firing=true; }
+  setInterval(fireBio,500);
+  function activateAI(li){
+    aNodes.filter(n=>n.li===li).forEach(n=>{n.active=true;n.at=0;});
+    if(li<aLayers.length-1) setTimeout(()=>activateAI(li+1),180);
+  }
+  function pulseAI(){ activateAI(0); }
+  pulseAI(); setInterval(pulseAI,2000);
+
+  function drawIntro(){
+    ctx.clearRect(0,0,S,S);
+    t+=0.018;
+
+    // Bio connections
+    bNodes.forEach((a,i)=>{ bNodes.forEach((b,j)=>{
+      if(j<=i) return;
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<100){
+        ctx.strokeStyle=`rgba(0,229,180,${(a.firing||b.firing)?0.5:0.1})`;
+        ctx.lineWidth=(a.firing||b.firing)?1.5:.5;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        if(a.firing&&!b.firing&&d<60){b.firing=true;b.ft=0;}
+      }
+    });});
+    // Bio nodes
+    bNodes.forEach(n=>{
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<20||n.x>150) n.vx*=-1;
+      if(n.y<20||n.y>S-20) n.vy*=-1;
+      n.ft++;if(n.ft>25)n.firing=false;
+      ctx.shadowBlur=n.firing?12:0;ctx.shadowColor='#00e5b4';
+      ctx.fillStyle=n.firing?'#00e5b4':'rgba(0,229,180,0.5)';
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+    });
+
+    // AI edges
+    aNodes.forEach(a=>{ aNodes.filter(b=>b.li===a.li+1).forEach(b=>{
+      ctx.strokeStyle=(a.active&&b.active)?'rgba(123,97,255,0.5)':'rgba(123,97,255,0.08)';
+      ctx.lineWidth=(a.active&&b.active)?1.5:.5;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    });});
+    // AI nodes
+    aNodes.forEach(n=>{
+      n.at++;if(n.at>35)n.active=false;
+      ctx.shadowBlur=n.active?14:0;ctx.shadowColor='#7b61ff';
+      ctx.fillStyle=n.active?'#7b61ff':'rgba(123,97,255,0.3)';
+      ctx.strokeStyle=n.active?'#7b61ff':'rgba(123,97,255,0.2)';
+      ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(n.x,n.y,n.active?7:5,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.shadowBlur=0;
+    });
+
+    // Centre bridge
+    const cg=ctx.createLinearGradient(155,80,165,S-80);
+    cg.addColorStop(0,'rgba(0,229,180,0.6)');
+    cg.addColorStop(0.5,'rgba(255,107,53,0.8)');
+    cg.addColorStop(1,'rgba(123,97,255,0.6)');
+    ctx.strokeStyle=cg;ctx.lineWidth=2;
+    ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(160,80);ctx.lineTo(160,S-80);ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Travelling spark on bridge
+    const spark=80+(S-160)*((t*0.4)%1);
+    ctx.shadowBlur=10;ctx.shadowColor='#ff6b35';
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(160,spark,4,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+
+    if(!dismissed) requestAnimationFrame(drawIntro);
+  }
+  drawIntro();
+
+  // Dismiss after loading bar completes (~2.8s)
+  setTimeout(()=>{
+    dismissed=true;
+    screen.classList.add('hidden');
+  }, 2900);
+})();
+
+// ─────────────────────────────────────────────
+// LIVE ARXIV PAPERS — via arXiv API (CORS-free)
+// ─────────────────────────────────────────────
+(async function fetchLivePapers(){
+  const grid = document.getElementById('liveGrid');
+  const dot = document.getElementById('papersDot');
+  const statusText = document.getElementById('papersStatusText');
+  if(!grid) return;
+
+  // Three targeted arXiv queries covering our topic space
+  const queries = [
+    'brain+inspired+neural+network+neurodegeneration',
+    'transformer+attention+neuroscience+cognition',
+    'neuromorphic+computing+alzheimer+machine+learning'
+  ];
+
+  try {
+    const allPapers = [];
+    for(const q of queries){
+      const url = `https://export.arxiv.org/api/query?search_query=all:${q}&sortBy=submittedDate&sortOrder=descending&max_results=3`;
+      const res = await fetch(url);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, 'application/xml');
+      const entries = [...xml.querySelectorAll('entry')];
+      entries.forEach(e => {
+        const title = e.querySelector('title')?.textContent?.trim().replace(/\s+/g,' ') || 'Untitled';
+        const summary = e.querySelector('summary')?.textContent?.trim().replace(/\s+/g,' ').slice(0,200)+'…' || '';
+        const link = e.querySelector('id')?.textContent?.trim() || '#';
+        const published = e.querySelector('published')?.textContent?.slice(0,10) || '';
+        const authors = [...e.querySelectorAll('author name')].slice(0,2).map(a=>a.textContent).join(', ');
+        allPapers.push({title, summary, link, published, authors});
+      });
+    }
+
+    // Dedupe by title prefix and pick 6
+    const seen = new Set();
+    const unique = allPapers.filter(p => {
+      const key = p.title.slice(0,30);
+      if(seen.has(key)) return false;
+      seen.add(key); return true;
+    }).slice(0,6);
+
+    // Render
+    grid.innerHTML = unique.map(p => `
+      <div class="paper-card">
+        <div class="paper-card-title">${p.title}</div>
+        <div class="paper-card-authors">${p.authors}</div>
+        <div class="paper-card-summary">${p.summary}</div>
+        <div class="paper-card-meta">
+          <span class="paper-card-date">📅 ${p.published}</span>
+          <a class="paper-card-link" href="${p.link}" target="_blank" rel="noopener">arXiv →</a>
+        </div>
+      </div>
+    `).join('');
+
+    dot.classList.remove('loading');
+    dot.style.background = 'var(--bio)';
+    statusText.textContent = `${unique.length} papers fetched live from arXiv · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}`;
+
+  } catch(err) {
+    dot.classList.remove('loading');
+    dot.classList.add('error');
+    statusText.textContent = 'Could not reach arXiv — showing cached references below.';
+    grid.innerHTML = `
+      <div class="paper-card" style="grid-column:1/-1;text-align:center;padding:40px;">
+        <div style="font-size:24px;margin-bottom:12px;">📡</div>
+        <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:8px;">arXiv Unavailable</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">Live papers require network access. Visit <a href="https://arxiv.org/search/?searchtype=all&query=brain+inspired+AI+neurodegeneration" target="_blank" style="color:var(--ai)">arXiv.org</a> directly to browse the latest research.</div>
+      </div>`;
+  }
+})();
 
 // ─────────────────────────────────────────────
 // BRIDGE CANVAS — animated connectors
