@@ -21,9 +21,10 @@
     --bg: #07070f;
     --surface: #0f0f1e;
     --card: #13132a;
-    --border: rgba(255,255,255,0.07);
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
+    --border: rgba(255,255,255,0.09);
+    --text: #f0f0f8;
+    --muted: #a8a8c0;
+    --dim: #7070a0;
     --glow-bio: 0 0 30px rgba(0,229,180,0.3);
     --glow-ai: 0 0 30px rgba(123,97,255,0.3);
   }
@@ -59,7 +60,7 @@
   .hero-label{
     font-family:'Syne',sans-serif;
     font-size:11px;letter-spacing:4px;text-transform:uppercase;
-    color:var(--muted);margin-bottom:24px;
+    color:var(--dim);margin-bottom:24px;
     animation:fadeUp 0.8s ease both;
   }
   .hero-title{
@@ -69,11 +70,11 @@
     animation:fadeUp 0.8s 0.1s ease both;
   }
   .hero-title .bio{color:var(--bio);}
-  .hero-title .divide{color:var(--muted);font-weight:400;}
+  .hero-title .divide{color:var(--dim);font-weight:400;}
   .hero-title .aii{color:var(--ai);}
   .hero-sub{
-    font-size:13px;color:var(--muted);max-width:500px;
-    line-height:1.8;margin-bottom:48px;
+    font-size:14px;color:var(--muted);max-width:520px;
+    line-height:1.9;margin-bottom:48px;
     animation:fadeUp 0.8s 0.2s ease both;
   }
   .hero-cta{
@@ -135,7 +136,7 @@
   section{padding:80px 20px;max-width:1100px;margin:0 auto;}
   .section-label{
     font-size:10px;letter-spacing:4px;text-transform:uppercase;
-    color:var(--muted);margin-bottom:16px;
+    color:var(--dim);margin-bottom:16px;
   }
   .section-title{
     font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);
@@ -164,7 +165,7 @@
   .badge-bio{background:rgba(0,229,180,0.15);color:var(--bio);}
   .badge-ai{background:rgba(123,97,255,0.15);color:var(--ai);}
   .card-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
-  .card-desc{font-size:12px;line-height:1.9;color:var(--muted);}
+  .card-desc{font-size:12px;line-height:1.95;color:var(--muted);}
 
 
   /* ── INTERACTIVE NEURON / TRANSFORMER ── */
@@ -181,7 +182,7 @@
     font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
     margin-bottom:6px;
   }
-  .ibox-sub{font-size:11px;color:var(--muted);margin-bottom:20px;line-height:1.7;}
+  .ibox-sub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.8;}
   .ibox-canvas{width:100%;height:220px;border-radius:8px;overflow:hidden;}
   .ibox-canvas canvas{width:100%;height:100%;}
 
@@ -201,11 +202,11 @@
   .learning-card.bio-card::before{background:var(--bio);}
   .learning-card.ai-card::before{background:var(--ai);}
   .learning-card.both-card::before{background:linear-gradient(90deg,var(--bio),var(--ai));}
-  .learning-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
-  .learning-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .learning-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:12px;}
+  .learning-list{list-style:none;display:flex;flex-direction:column;gap:12px;}
   .learning-list li{
-    font-size:11px;color:var(--muted);line-height:1.7;
-    padding-left:16px;position:relative;
+    font-size:12px;color:var(--muted);line-height:1.8;
+    padding-left:18px;position:relative;
   }
   .learning-list li::before{
     content:'▸';position:absolute;left:0;
@@ -224,10 +225,10 @@
     background:var(--card);border:1px solid var(--border);
     border-radius:10px;padding:24px;
   }
-  .stat-label{font-size:11px;color:var(--muted);margin-bottom:12px;letter-spacing:1px;}
+  .stat-label{font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:1px;font-weight:600;}
   .stat-row{display:flex;justify-content:space-between;margin-bottom:8px;align-items:center;}
-  .stat-name{font-size:11px;}
-  .stat-val{font-size:11px;font-weight:700;}
+  .stat-name{font-size:12px;color:var(--muted);}
+  .stat-val{font-size:12px;font-weight:700;}
   .stat-bar-bg{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;margin-bottom:16px;}
   .stat-bar-fill{height:6px;border-radius:3px;transition:width 1.5s cubic-bezier(.16,1,.3,1);}
 
@@ -235,7 +236,7 @@
   footer{
     text-align:center;padding:40px 20px;
     border-top:1px solid var(--border);
-    font-size:11px;color:var(--muted);
+    font-size:11px;color:var(--dim);
   }
   footer span{color:var(--bio);}
 
@@ -286,9 +287,9 @@
   .res-bridge-col.ai .res-bridge-label{color:var(--ai);}
   .res-bridge-items{display:flex;flex-direction:column;gap:14px;}
   .res-bridge-item{
-    font-size:11px;color:var(--muted);
-    padding:8px 12px;background:rgba(255,255,255,0.03);
-    border-radius:6px;line-height:1.5;
+    font-size:12px;color:var(--muted);
+    padding:10px 14px;background:rgba(255,255,255,0.04);
+    border-radius:6px;line-height:1.6;
   }
   .res-bridge-center{display:flex;align-items:center;justify-content:center;padding:28px 0;}
   @media(max-width:600px){
@@ -312,10 +313,10 @@
     color:rgba(0,229,180,0.15);position:absolute;top:16px;right:20px;
   }
   .res-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;padding-right:40px;}
-  .res-card-desc{font-size:11px;color:var(--muted);line-height:1.85;margin-bottom:14px;}
+  .res-card-desc{font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:14px;}
   .res-tag{
-    font-size:9px;letter-spacing:1px;color:rgba(0,229,180,0.5);
-    border:1px solid rgba(0,229,180,0.15);padding:4px 8px;border-radius:3px;
+    font-size:9px;letter-spacing:1px;color:rgba(0,229,180,0.7);
+    border:1px solid rgba(0,229,180,0.2);padding:4px 8px;border-radius:3px;
     display:inline-block;
   }
   .res-limits{display:flex;flex-direction:column;gap:3px;}
@@ -330,7 +331,7 @@
   .res-limit-item:last-child{border-radius:0 0 10px 10px;}
   .res-limit-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
   .res-limit-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;}
-  .res-limit-desc{font-size:11px;color:var(--muted);line-height:1.8;}
+  .res-limit-desc{font-size:12px;color:var(--muted);line-height:1.85;}
   .res-verdict{
     background:linear-gradient(135deg,rgba(0,229,180,0.06),rgba(123,97,255,0.06));
     border:1px solid rgba(0,229,180,0.15);border-radius:12px;
@@ -338,7 +339,7 @@
   .res-verdict-inner{padding:40px;text-align:center;}
   .res-verdict-icon{font-size:36px;margin-bottom:16px;}
   .res-verdict-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:16px;}
-  .res-verdict-desc{font-size:12px;color:var(--muted);line-height:2;max-width:640px;margin:0 auto;}
+  .res-verdict-desc{font-size:13px;color:var(--muted);line-height:2.1;max-width:640px;margin:0 auto;}
 
   /* ── DISCLAIMER BADGE ── */
   .disclaimer-badge{
@@ -352,9 +353,9 @@
   .disclaimer-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
   .disclaimer-title{
     font-family:'Syne',sans-serif;font-size:12px;font-weight:700;
-    color:var(--warm);margin-bottom:5px;
+    color:var(--warm);margin-bottom:6px;
   }
-  .disclaimer-text{font-size:10px;color:var(--muted);line-height:1.8;}
+  .disclaimer-text{font-size:11px;color:var(--muted);line-height:1.85;}
   .res-tag[href]{
     cursor:pointer;text-decoration:none;
     transition:background .2s,color .2s;display:inline-block;
@@ -425,7 +426,7 @@
   }
   .tl-item:hover .tl-dot{transform:scale(1.12);border-color:var(--bio);box-shadow:var(--glow-bio);}
   .tl-year{
-    font-family:'Syne',sans-serif;font-size:10px;font-weight:800;
+    font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
     letter-spacing:1px;color:var(--muted);text-align:center;white-space:nowrap;
   }
   .tl-card{
@@ -434,8 +435,8 @@
     transition:all .25s;
   }
   .tl-item:hover .tl-card{border-color:rgba(0,229,180,0.25);background:#151530;}
-  .tl-card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:8px;line-height:1.3;}
-  .tl-card-desc{font-size:12px;color:var(--muted);line-height:1.85;}
+  .tl-card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;line-height:1.3;}
+  .tl-card-desc{font-size:13px;color:var(--muted);line-height:1.9;}
   .tl-card-tag{
     display:inline-block;margin-top:12px;padding:4px 10px;border-radius:3px;
     font-size:9px;letter-spacing:1px;font-weight:700;
@@ -446,7 +447,7 @@
 
   /* ── LIVE PAPERS ── */
   .papers-status{
-    font-size:11px;color:var(--muted);margin-bottom:20px;
+    font-size:12px;color:var(--muted);margin-bottom:20px;
     display:flex;align-items:center;gap:8px;
   }
   .papers-dot{
@@ -461,20 +462,21 @@
     border-radius:10px;padding:20px;
     transition:transform .2s,box-shadow .2s;
     display:flex;flex-direction:column;gap:10px;
+    border-top:2px solid rgba(123,97,255,0.3);
   }
   .paper-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
   .paper-card-title{
-    font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
-    line-height:1.5;color:var(--text);
+    font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+    line-height:1.55;color:var(--text);
   }
-  .paper-card-authors{font-size:10px;color:var(--muted);}
-  .paper-card-summary{font-size:11px;color:var(--muted);line-height:1.75;flex:1;}
+  .paper-card-authors{font-size:11px;color:var(--bio);opacity:0.8;}
+  .paper-card-summary{font-size:12px;color:var(--muted);line-height:1.85;flex:1;}
   .paper-card-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-  .paper-card-date{font-size:9px;color:var(--muted);}
+  .paper-card-date{font-size:10px;color:var(--dim);}
   .paper-card-link{
-    font-size:9px;letter-spacing:1px;color:var(--ai);
-    border:1px solid rgba(123,97,255,0.3);padding:3px 8px;border-radius:3px;
-    text-decoration:none;transition:background .2s;
+    font-size:10px;letter-spacing:1px;color:var(--ai);
+    border:1px solid rgba(123,97,255,0.35);padding:4px 10px;border-radius:3px;
+    text-decoration:none;transition:background .2s;font-weight:600;
   }
   .paper-card-link:hover{background:rgba(123,97,255,0.15);}
   .paper-skeleton{
@@ -546,7 +548,7 @@
   <div class="reveal">
     <p class="section-label">// Layer 01</p>
     <h2 class="section-title">Direct <span style="color:var(--bio)">Structural</span> Analogies</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.8;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.85;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
   </div>
   <div class="analogy-canvas-wrap reveal">
     <canvas id="analogyCanvas" height="560"></canvas>
@@ -558,7 +560,7 @@
   <div class="reveal">
     <p class="section-label">// Layer 02</p>
     <h2 class="section-title">Signal <span style="color:var(--warm)">Flow</span> — Brain vs LLM</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.8;">Watch how information travels layer-by-layer through both systems simultaneously.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.85;">Watch how information travels layer-by-layer through both systems simultaneously.</p>
   </div>
   <div class="pipeline-wrap reveal">
     <canvas id="pipelineCanvas" height="320"></canvas>
@@ -712,7 +714,7 @@
   <div class="reveal">
     <p class="section-label">// Layer 07 · History</p>
     <h2 class="section-title">Brain-Inspired AI<br><span style="color:var(--bio)">1958</span> → <span style="color:var(--ai)">Today</span></h2>
-    <p style="font-size:12px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:48px;">Every major AI breakthrough borrowed something from the brain. Here's how the two fields co-evolved over six decades.</p>
+    <p style="font-size:13px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:48px;">Every major AI breakthrough borrowed something from the brain. Here's how the two fields co-evolved over six decades.</p>
   </div>
   <div class="tl-track reveal">
     <div class="tl-line"></div>
@@ -833,7 +835,7 @@
   <div class="reveal">
     <p class="section-label">// Layer 08 · Live Feed</p>
     <h2 class="section-title">Latest <span style="color:var(--ai)">Research</span> Papers</h2>
-    <p style="font-size:12px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:8px;">Live feed from arXiv — most recent papers on brain-inspired AI, neurodegeneration + ML, and neural interfaces. Fetched fresh on every load.</p>
+    <p style="font-size:13px;color:var(--muted);max-width:640px;line-height:1.9;margin-bottom:8px;">Live feed from arXiv — most recent papers on brain-inspired AI, neurodegeneration + ML, and neural interfaces. Fetched fresh on every load.</p>
     <div class="papers-status" id="papersStatus">
       <div class="papers-dot loading" id="papersDot"></div>
       <span id="papersStatusText">Fetching latest papers from arXiv…</span>
@@ -855,7 +857,7 @@
   <div class="reveal">
     <p class="section-label">// Layer 09 · Neuro × AI Frontier</p>
     <h2 class="section-title">Degenerative Neurons<br><span style="color:var(--warm)">vs</span> LLM Weight Loss</h2>
-    <p style="font-size:12px;color:var(--muted);max-width:680px;line-height:1.9;margin-bottom:24px;">
+    <p style="font-size:13px;color:var(--muted);max-width:680px;line-height:1.9;margin-bottom:24px;">
       The Brain↔LLM analogy opens a powerful lens for neurodegeneration research — giving scientists a mathematical framework to model, predict, and simulate what goes wrong when neurons die.
     </p>
     <!-- DISCLAIMER BADGE -->
