@@ -397,24 +397,24 @@
   @keyframes introLoad{from{width:0%;}to{width:100%;}}
 
   /* ── TIMELINE ── */
-  #timeline{padding:80px 20px;max-width:1100px;margin:0 auto;}
-  .tl-track{position:relative;padding-left:80px;}
+  #timeline{padding:80px 20px;max-width:900px;margin:0 auto;}
+  .tl-track{position:relative;padding-left:0;}
   .tl-line{
-    position:absolute;left:28px;top:0;bottom:0;
+    position:absolute;left:22px;top:0;bottom:0;
     width:2px;
     background:linear-gradient(to bottom,var(--bio),var(--ai));
     opacity:0.25;
   }
   .tl-item{
-    display:grid;grid-template-columns:56px 1fr;
+    display:flex;flex-direction:row;
     align-items:flex-start;gap:20px;
-    margin-bottom:36px;position:relative;
+    margin-bottom:32px;position:relative;
   }
-  .tl-left{display:none !important;}
-  .tl-right{display:block !important;text-align:left !important;padding-left:0 !important;}
+  .tl-left{display:none;}
+  .tl-right{flex:1;min-width:0;}
   .tl-center{
     display:flex;flex-direction:column;align-items:center;gap:6px;
-    position:relative;z-index:2;flex-shrink:0;margin-top:4px;
+    flex-shrink:0;width:44px;position:relative;z-index:2;margin-top:2px;
   }
   .tl-dot{
     width:44px;height:44px;border-radius:50%;
@@ -718,148 +718,113 @@
     <div class="tl-line"></div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">Perceptron</div>
-          <div class="tl-card-desc">Frank Rosenblatt at Cornell builds the first trainable artificial neuron, inspired directly by McCulloch-Pitts neuron model of 1943. Learns to classify images using weighted inputs — the first hardware AI.</div>
-          <span class="tl-card-tag tag-both">Brain → AI</span>
-        </div>
-      </div>
       <div class="tl-center"><div class="tl-dot">🧠</div><div class="tl-year">1958</div></div>
-      <div class="tl-right"></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Perceptron</div>
+        <div class="tl-card-desc">Frank Rosenblatt at Cornell builds the first trainable artificial neuron, inspired directly by McCulloch-Pitts neuron model of 1943. Learns to classify images using weighted inputs — the first hardware AI.</div>
+        <span class="tl-card-tag tag-both">Brain → AI</span>
+      </div></div>
     </div>
 
-    <div class="tl-item right">
-      <div class="tl-left"></div>
+    <div class="tl-item">
       <div class="tl-center"><div class="tl-dot">❄️</div><div class="tl-year">1969</div></div>
-      <div class="tl-right">
-        <div class="tl-card">
-          <div class="tl-card-title">First AI Winter</div>
-          <div class="tl-card-desc">Minsky & Papert's "Perceptrons" book exposes XOR limitation. Funding dries up. The brain analogy seemed too simplistic — researchers abandon neural approaches for symbolic AI for a decade.</div>
-          <span class="tl-card-tag tag-ai">AI Setback</span>
-        </div>
-      </div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">First AI Winter</div>
+        <div class="tl-card-desc">Minsky & Papert's "Perceptrons" book exposes XOR limitation. Funding dries up. The brain analogy seemed too simplistic — researchers abandon neural approaches for symbolic AI for a decade.</div>
+        <span class="tl-card-tag tag-ai">AI Setback</span>
+      </div></div>
     </div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">Backpropagation</div>
-          <div class="tl-card-desc">Rumelhart, Hinton & Williams publish backprop, enabling multi-layer networks to learn. Directly modelled on synaptic error correction signals hypothesised in biological neural systems.</div>
-          <span class="tl-card-tag tag-both">Brain-Inspired</span>
-        </div>
-      </div>
       <div class="tl-center"><div class="tl-dot">⚡</div><div class="tl-year">1986</div></div>
-      <div class="tl-right"></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Backpropagation</div>
+        <div class="tl-card-desc">Rumelhart, Hinton & Williams publish backprop, enabling multi-layer networks to learn. Directly modelled on synaptic error correction signals hypothesised in biological neural systems.</div>
+        <span class="tl-card-tag tag-both">Brain-Inspired</span>
+      </div></div>
     </div>
 
-    <div class="tl-item right">
-      <div class="tl-left"></div>
+    <div class="tl-item">
       <div class="tl-center"><div class="tl-dot">👁️</div><div class="tl-year">1989</div></div>
-      <div class="tl-right">
-        <div class="tl-card">
-          <div class="tl-card-title">Convolutional Networks</div>
-          <div class="tl-card-desc">LeCun's LeNet applies CNNs to digit recognition — directly modelled on Hubel & Wiesel's 1959 discovery of hierarchical edge detectors in the visual cortex. V1 → V2 → IT cortex becomes Conv → Pool → FC.</div>
-          <span class="tl-card-tag tag-both">Visual Cortex → CNN</span>
-        </div>
-      </div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Convolutional Networks</div>
+        <div class="tl-card-desc">LeCun's LeNet applies CNNs to digit recognition — directly modelled on Hubel & Wiesel's 1959 discovery of hierarchical edge detectors in the visual cortex. V1 → V2 → IT cortex becomes Conv → Pool → FC.</div>
+        <span class="tl-card-tag tag-both">Visual Cortex → CNN</span>
+      </div></div>
     </div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">Long Short-Term Memory</div>
-          <div class="tl-card-desc">Hochreiter & Schmidhuber's LSTM introduces gated memory cells — inspired by how hippocampal circuits selectively consolidate and forget information over time. Solves vanishing gradient by mimicking biological memory gating.</div>
-          <span class="tl-card-tag tag-both">Hippocampus → LSTM</span>
-        </div>
-      </div>
       <div class="tl-center"><div class="tl-dot">💾</div><div class="tl-year">1997</div></div>
-      <div class="tl-right"></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Long Short-Term Memory</div>
+        <div class="tl-card-desc">Hochreiter & Schmidhuber's LSTM introduces gated memory cells — inspired by how hippocampal circuits selectively consolidate and forget information over time. Solves vanishing gradient by mimicking biological memory gating.</div>
+        <span class="tl-card-tag tag-both">Hippocampus → LSTM</span>
+      </div></div>
     </div>
 
-    <div class="tl-item right">
-      <div class="tl-left"></div>
+    <div class="tl-item">
       <div class="tl-center"><div class="tl-dot">🚀</div><div class="tl-year">2012</div></div>
-      <div class="tl-right">
-        <div class="tl-card">
-          <div class="tl-card-title">Deep Learning Revolution</div>
-          <div class="tl-card-desc">AlexNet wins ImageNet by a 10% margin using deep CNNs on GPUs. Hinton, LeCun & Bengio's decades of brain-inspired work suddenly scales. The ventral visual stream is now computationally reproducible for the first time.</div>
-          <span class="tl-card-tag tag-ai">Deep Learning Era</span>
-        </div>
-      </div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Deep Learning Revolution</div>
+        <div class="tl-card-desc">AlexNet wins ImageNet by a 10% margin using deep CNNs on GPUs. Hinton, LeCun & Bengio's decades of brain-inspired work suddenly scales. The ventral visual stream is now computationally reproducible for the first time.</div>
+        <span class="tl-card-tag tag-ai">Deep Learning Era</span>
+      </div></div>
     </div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">Dropout Regularisation</div>
-          <div class="tl-card-desc">Srivastava & Hinton introduce dropout — randomly silencing neurons during training. Later linked to cognitive reserve: brains with more redundant connections tolerate more neurodegeneration before symptoms appear.</div>
-          <span class="tl-card-tag tag-both">AI → Neuroscience</span>
-        </div>
-      </div>
       <div class="tl-center"><div class="tl-dot">🎲</div><div class="tl-year">2014</div></div>
-      <div class="tl-right"></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Dropout Regularisation</div>
+        <div class="tl-card-desc">Srivastava & Hinton introduce dropout — randomly silencing neurons during training. Later linked to cognitive reserve: brains with more redundant connections tolerate more neurodegeneration before symptoms appear.</div>
+        <span class="tl-card-tag tag-both">AI → Neuroscience</span>
+      </div></div>
     </div>
 
-    <div class="tl-item right">
-      <div class="tl-left"></div>
+    <div class="tl-item">
       <div class="tl-center"><div class="tl-dot">🎯</div><div class="tl-year">2017</div></div>
-      <div class="tl-right">
-        <div class="tl-card">
-          <div class="tl-card-title">Transformer & Attention</div>
-          <div class="tl-card-desc">"Attention Is All You Need" (Vaswani et al., Google Brain) replaces recurrence with self-attention — mirroring how the prefrontal cortex dynamically weights sensory inputs. Every modern LLM is built on this architecture.</div>
-          <span class="tl-card-tag tag-both">PFC Attention → Transformer</span>
-        </div>
-      </div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">Transformer & Attention</div>
+        <div class="tl-card-desc">"Attention Is All You Need" (Vaswani et al., Google Brain) replaces recurrence with self-attention — mirroring how the prefrontal cortex dynamically weights sensory inputs. Every modern LLM is built on this architecture.</div>
+        <span class="tl-card-tag tag-both">PFC Attention → Transformer</span>
+      </div></div>
     </div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">EWC — Catastrophic Forgetting Solved</div>
-          <div class="tl-card-desc">DeepMind's Elastic Weight Consolidation paper demonstrates AI can learn sequentially without forgetting — by protecting important weights, mimicking synaptic consolidation. Directly bridges AI to Alzheimer's memory research.</div>
-          <span class="tl-card-tag tag-both">Synapse → EWC</span>
-        </div>
-      </div>
       <div class="tl-center"><div class="tl-dot">🔗</div><div class="tl-year">2017</div></div>
-      <div class="tl-right"></div>
-    </div>
-
-    <div class="tl-item right">
-      <div class="tl-left"></div>
-      <div class="tl-center"><div class="tl-dot">🌐</div><div class="tl-year">2020</div></div>
-      <div class="tl-right">
-        <div class="tl-card">
-          <div class="tl-card-title">GPT-3 & Large Language Models</div>
-          <div class="tl-card-desc">175B parameter models show emergent abilities — reasoning, analogy, few-shot learning — not explicitly trained. Mirrors how cortical column formation gives rise to abstract thought beyond the sum of individual neurons.</div>
-          <span class="tl-card-tag tag-ai">Emergent Cognition</span>
-        </div>
-      </div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">EWC — Catastrophic Forgetting Solved</div>
+        <div class="tl-card-desc">DeepMind's Elastic Weight Consolidation paper demonstrates AI can learn sequentially without forgetting — by protecting important weights, mimicking synaptic consolidation. Directly bridges AI to Alzheimer's memory research.</div>
+        <span class="tl-card-tag tag-both">Synapse → EWC</span>
+      </div></div>
     </div>
 
     <div class="tl-item">
-      <div class="tl-left">
-        <div class="tl-card">
-          <div class="tl-card-title">AlphaFold2 — Protein Revolution</div>
-          <div class="tl-card-desc">Neural networks predict protein folding with atomic accuracy — cracking a 50-year biology problem. Opens direct path to drug discovery for tau/amyloid proteins causing Alzheimer's and Parkinson's. 200M+ structures released.</div>
-          <span class="tl-card-tag tag-both">AI → Medicine</span>
-        </div>
-      </div>
-      <div class="tl-center"><div class="tl-dot">🧬</div><div class="tl-year">2021</div></div>
-      <div class="tl-right"></div>
+      <div class="tl-center"><div class="tl-dot">🌐</div><div class="tl-year">2020</div></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">GPT-3 & Large Language Models</div>
+        <div class="tl-card-desc">175B parameter models show emergent abilities — reasoning, analogy, few-shot learning — not explicitly trained. Mirrors how cortical column formation gives rise to abstract thought beyond the sum of individual neurons.</div>
+        <span class="tl-card-tag tag-ai">Emergent Cognition</span>
+      </div></div>
     </div>
 
-    <div class="tl-item right">
-      <div class="tl-left"></div>
-      <div class="tl-center"><div class="tl-dot">✨</div><div class="tl-year">Now</div></div>
-      <div class="tl-right">
-        <div class="tl-card" style="border-color:rgba(0,229,180,0.3);">
-          <div class="tl-card-title">Neuromorphic AI + BCI</div>
-          <div class="tl-card-desc">Intel Loihi 2, IBM NorthPole, and BrainScaleS chips run spiking neural networks at biological efficiency. Brain-computer interfaces (Neuralink, BrainGate) begin restoring motor function in ALS patients. The loop closes — AI helping repair the brain.</div>
-          <span class="tl-card-tag tag-both">Full Circle</span>
-        </div>
-      </div>
+    <div class="tl-item">
+      <div class="tl-center"><div class="tl-dot">🧬</div><div class="tl-year">2021</div></div>
+      <div class="tl-right"><div class="tl-card">
+        <div class="tl-card-title">AlphaFold2 — Protein Revolution</div>
+        <div class="tl-card-desc">Neural networks predict protein folding with atomic accuracy — cracking a 50-year biology problem. Opens direct path to drug discovery for tau/amyloid proteins causing Alzheimer's and Parkinson's. 200M+ structures released.</div>
+        <span class="tl-card-tag tag-both">AI → Medicine</span>
+      </div></div>
     </div>
+
+    <div class="tl-item">
+      <div class="tl-center"><div class="tl-dot">✨</div><div class="tl-year">Now</div></div>
+      <div class="tl-right"><div class="tl-card" style="border-color:rgba(0,229,180,0.3);">
+        <div class="tl-card-title">Neuromorphic AI + BCI</div>
+        <div class="tl-card-desc">Intel Loihi 2, IBM NorthPole, and BrainScaleS chips run spiking neural networks at biological efficiency. Brain-computer interfaces (Neuralink, BrainGate) begin restoring motor function in ALS patients. The loop closes — AI helping repair the brain.</div>
+        <span class="tl-card-tag tag-both">Full Circle</span>
+      </div></div>
+    </div>
+
   </div>
 </section>
 
