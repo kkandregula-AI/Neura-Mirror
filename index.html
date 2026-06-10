@@ -574,7 +574,7 @@
     <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.85;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
   </div>
   <div class="analogy-canvas-wrap reveal">
-    <canvas id="analogyCanvas" height="560"></canvas>
+    <canvas id="analogyCanvas" height="680"></canvas>
   </div>
 </section>
 
@@ -1388,40 +1388,42 @@
       const pulse = Math.sin(animT + i * 0.9) * 0.5 + 0.5;
 
       // row bg
-      ctx.fillStyle = active ? 'rgba(0,229,180,0.07)' : (i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent');
+      ctx.fillStyle = active ? 'rgba(0,229,180,0.10)' : (i % 2 === 0 ? 'rgba(255,255,255,0.025)' : 'transparent');
       ctx.fillRect(0, y, W, ROW_H);
 
-      // left bio panel
+      // left bio panel — title (bright, no dimming)
       const bioX = MID * 0.5;
-      ctx.fillStyle = active ? '#00e5b4' : `rgba(0,229,180,${0.55 + pulse * 0.3})`;
-      ctx.font = `bold ${W < 500 ? 11 : 13}px Syne`;
+      ctx.fillStyle = active ? '#2effc8' : '#00e5b4';
+      ctx.font = `bold ${W < 500 ? 12 : 14}px Syne`;
       ctx.textAlign = 'center';
-      ctx.fillText(p.bio, bioX, y + ROW_H * 0.38);
-      ctx.fillStyle = 'rgba(180,255,230,0.45)';
-      ctx.font = `${W < 500 ? 9 : 10}px Space Mono`;
-      wrapText(ctx, p.bioSub, bioX, y + ROW_H * 0.55, MID - 20, 14);
+      ctx.fillText(p.bio, bioX, y + ROW_H * 0.36);
+      // bio subtext — bright readable
+      ctx.fillStyle = 'rgba(220,255,245,0.85)';
+      ctx.font = `${W < 500 ? 10 : 11}px Space Mono`;
+      wrapText(ctx, p.bioSub, bioX, y + ROW_H * 0.56, MID - 20, W < 500 ? 15 : 16);
 
-      // right ai panel
+      // right ai panel — title (bright)
       const aiX = MID + MID * 0.5;
-      ctx.fillStyle = active ? '#a78bfa' : `rgba(123,97,255,${0.55 + pulse * 0.3})`;
-      ctx.font = `bold ${W < 500 ? 11 : 13}px Syne`;
-      ctx.fillText(p.ai, aiX, y + ROW_H * 0.38);
-      ctx.fillStyle = 'rgba(200,190,255,0.45)';
-      ctx.font = `${W < 500 ? 9 : 10}px Space Mono`;
-      wrapText(ctx, p.aiSub, aiX, y + ROW_H * 0.55, MID - 20, 14);
+      ctx.fillStyle = active ? '#b9a3ff' : '#9d85ff';
+      ctx.font = `bold ${W < 500 ? 12 : 14}px Syne`;
+      ctx.fillText(p.ai, aiX, y + ROW_H * 0.36);
+      // ai subtext — bright readable
+      ctx.fillStyle = 'rgba(232,226,255,0.85)';
+      ctx.font = `${W < 500 ? 10 : 11}px Space Mono`;
+      wrapText(ctx, p.aiSub, aiX, y + ROW_H * 0.56, MID - 20, W < 500 ? 15 : 16);
 
       // center bridge
-      const bridgeAlpha = active ? 0.9 : 0.25 + pulse * 0.2;
+      const bridgeAlpha = active ? 1 : 0.5 + pulse * 0.2;
       const grad = ctx.createLinearGradient(MID - 28, 0, MID + 28, 0);
       grad.addColorStop(0, `rgba(0,229,180,${bridgeAlpha})`);
-      grad.addColorStop(1, `rgba(123,97,255,${bridgeAlpha})`);
+      grad.addColorStop(1, `rgba(157,133,255,${bridgeAlpha})`);
       ctx.fillStyle = grad;
       ctx.font = `bold ${active ? 18 : 15}px Syne`;
       ctx.fillText('≈', MID, y + ROW_H * 0.5 + 6);
 
       // divider line
       if(i < PAIRS.length - 1) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(20, y + ROW_H);
@@ -1443,14 +1445,14 @@
       }
     });
 
-    // Column headers
-    ctx.fillStyle = 'rgba(0,229,180,0.4)';
-    ctx.font = '9px Space Mono';
+    // Column headers — bright
+    ctx.fillStyle = '#00e5b4';
+    ctx.font = 'bold 10px Space Mono';
     ctx.letterSpacing = '2px';
     ctx.textAlign = 'center';
-    ctx.fillText('HUMAN BRAIN', MID * 0.5, 10);
-    ctx.fillStyle = 'rgba(123,97,255,0.4)';
-    ctx.fillText('LLM / NEURAL NET', MID + MID * 0.5, 10);
+    ctx.fillText('HUMAN BRAIN', MID * 0.5, 12);
+    ctx.fillStyle = '#9d85ff';
+    ctx.fillText('LLM / NEURAL NET', MID + MID * 0.5, 12);
     ctx.textAlign = 'left';
 
     requestAnimationFrame(draw);
