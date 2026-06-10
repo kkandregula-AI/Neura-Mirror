@@ -276,7 +276,63 @@
   }
   @keyframes bobble{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
 
-  /* ── ANALOGY CANVAS SECTION ── */
+  /* ── ANALOGY TABLE (sharp HTML) ── */
+  .analogy-table{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;overflow:hidden;
+  }
+  .at-head{
+    display:grid;grid-template-columns:1fr 48px 1fr;
+    align-items:center;padding:16px 20px;
+    background:rgba(255,255,255,0.03);
+    border-bottom:1px solid var(--border);
+  }
+  .at-head-bio,.at-head-ai{
+    font-family:'Syne',sans-serif;font-size:13px;font-weight:800;
+    letter-spacing:0.5px;text-align:center;
+  }
+  .at-head-bio{color:var(--bio);}
+  .at-head-ai{color:#a78bfa;}
+  .at-row{
+    display:grid;grid-template-columns:1fr 48px 1fr;
+    align-items:center;gap:8px;
+    padding:18px 20px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    transition:background .2s;
+    cursor:default;
+  }
+  .at-row:last-child{border-bottom:none;}
+  .at-row:hover,.at-row:active{background:rgba(0,229,180,0.06);}
+  .at-bio,.at-ai{display:flex;flex-direction:column;gap:5px;text-align:center;}
+  .at-title{
+    font-family:'Syne',sans-serif;font-size:16px;font-weight:700;
+    line-height:1.25;
+  }
+  .at-bio .at-title{color:#2effc8;}
+  .at-ai .at-title{color:#b9a3ff;}
+  .at-desc{
+    font-size:12.5px;line-height:1.6;
+    color:#e8e8f5;
+  }
+  .at-bio .at-desc{color:#d4f5ec;}
+  .at-ai .at-desc{color:#e4ddff;}
+  .at-mid{
+    text-align:center;font-family:'Syne',sans-serif;
+    font-size:20px;font-weight:800;
+    background:linear-gradient(135deg,var(--bio),#a78bfa);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  @media(max-width:560px){
+    .at-head{padding:14px 12px;}
+    .at-head-bio,.at-head-ai{font-size:11px;}
+    .at-row{padding:16px 12px;gap:4px;grid-template-columns:1fr 28px 1fr;}
+    .at-title{font-size:14px;}
+    .at-desc{font-size:11.5px;line-height:1.55;}
+    .at-mid{font-size:15px;}
+  }
+
+  /* ── ANALOGY CANVAS SECTION (legacy) ── */
   .analogy-canvas-wrap{
     background:var(--card);border:1px solid var(--border);
     border-radius:12px;overflow:hidden;
@@ -566,15 +622,103 @@
 </div>
 
 
-<!-- ANALOGIES CANVAS -->
+<!-- ANALOGIES -->
 <section id="analogies">
   <div class="reveal">
     <p class="section-label">// Layer 01</p>
     <h2 class="section-title">Direct <span style="color:var(--bio)">Structural</span> Analogies</h2>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.85;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.85;">Each concept in the human brain has a mathematical mirror inside an LLM. Tap any row to highlight.</p>
   </div>
-  <div class="analogy-canvas-wrap reveal">
-    <canvas id="analogyCanvas" height="680"></canvas>
+  <div class="analogy-table reveal">
+    <div class="at-head">
+      <div class="at-head-bio">🧠 Human Brain</div>
+      <div class="at-head-mid"></div>
+      <div class="at-head-ai">🤖 LLM / Neural Net</div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Neuron</div>
+        <div class="at-desc">86B biological cells that fire electrochemical signals</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Artificial Node</div>
+        <div class="at-desc">Math unit: weighted sum + activation function</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Synapse</div>
+        <div class="at-desc">Junction strengthened or weakened by use</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Weight Parameter</div>
+        <div class="at-desc">Number updated by backpropagation</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Visual Cortex</div>
+        <div class="at-desc">Edges → Shapes → Objects → Meaning (layered)</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Deep Network Layers</div>
+        <div class="at-desc">Tokens → Embeddings → Context → Output</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Selective Attention</div>
+        <div class="at-desc">Prefrontal cortex focuses on relevant stimuli</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Attention Mechanism</div>
+        <div class="at-desc">Transformer scores each token by relevance</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Long-Term Memory</div>
+        <div class="at-desc">Hippocampus consolidates episodic knowledge</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Pre-trained Weights</div>
+        <div class="at-desc">Billions of params encode world knowledge</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Broca's Area</div>
+        <div class="at-desc">Language production, grammar construction</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Decoder / Output Head</div>
+        <div class="at-desc">Generates next-token probability distribution</div>
+      </div>
+    </div>
+
+    <div class="at-row">
+      <div class="at-bio">
+        <div class="at-title">Neuroplasticity</div>
+        <div class="at-desc">Brain rewires based on new experiences</div>
+      </div>
+      <div class="at-mid">≈</div>
+      <div class="at-ai">
+        <div class="at-title">Fine-tuning / RLHF</div>
+        <div class="at-desc">Weights updated on new domain data</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1330,135 +1474,6 @@
 })();
 
 
-// ─────────────────────────────────────────────
-// ANALOGY CANVAS — animated side-by-side rows
-// ─────────────────────────────────────────────
-(function(){
-  const c = document.getElementById('analogyCanvas');
-  if(!c) return;
-  function resize(){
-    c.width = c.offsetWidth;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const PAIRS = [
-    {bio:'🧠 Neuron', bioSub:'86B biological cells\nthat fire signals', ai:'Artificial Node 🤖', aiSub:'Math unit: weighted sum\n+ activation function'},
-    {bio:'⚡ Synapse', bioSub:'Junction strengthened\nor weakened by use', ai:'Weight Parameter 🎛️', aiSub:'Number updated by\nbackpropagation'},
-    {bio:'👁️ Visual Cortex', bioSub:'Edges → Shapes → Objects\n→ Meaning (layered)', ai:'Deep Network Layers 📊', aiSub:'Tokens → Embeddings\n→ Context → Output'},
-    {bio:'🎯 Selective Attention', bioSub:'Prefrontal cortex focuses\non relevant stimuli', ai:'Attention Mechanism 🔦', aiSub:'Transformer scores each\ntoken by relevance'},
-    {bio:'💾 Long-Term Memory', bioSub:'Hippocampus consolidates\nepisodic knowledge', ai:'Pre-trained Weights 🗄️', aiSub:'Billions of params encode\nworld knowledge'},
-    {bio:'🗣️ Broca\'s Area', bioSub:'Language production,\ngrammar construction', ai:'Decoder / Output Head 📝', aiSub:'Generates next-token\nprobability distribution'},
-    {bio:'🌱 Neuroplasticity', bioSub:'Brain rewires based\non new experiences', ai:'Fine-tuning / RLHF 🔧', aiSub:'Weights updated on\nnew domain data'},
-  ];
-
-  let hovered = -1;
-  let animT = 0;
-
-  c.addEventListener('mousemove', e => {
-    const rect = c.getBoundingClientRect();
-    const y = (e.clientY - rect.top) * (c.height / rect.height);
-    const ROW_H = c.height / PAIRS.length;
-    hovered = Math.floor(y / ROW_H);
-  });
-  c.addEventListener('mouseleave', () => { hovered = -1; });
-  c.addEventListener('touchstart', e => {
-    const rect = c.getBoundingClientRect();
-    const y = (e.touches[0].clientY - rect.top) * (c.height / rect.height);
-    const ROW_H = c.height / PAIRS.length;
-    hovered = Math.floor(y / ROW_H);
-  }, {passive:true});
-
-  function wrapText(ctx, text, x, y, maxW, lineH) {
-    const lines = text.split('\n');
-    lines.forEach((line, i) => ctx.fillText(line, x, y + i * lineH));
-  }
-
-  function draw() {
-    const W = c.width, H = c.height;
-    const ctx = c.getContext('2d');
-    ctx.clearRect(0, 0, W, H);
-    const ROW_H = H / PAIRS.length;
-    const MID = W / 2;
-    animT += 0.018;
-
-    PAIRS.forEach((p, i) => {
-      const y = i * ROW_H;
-      const active = i === hovered;
-      const pulse = Math.sin(animT + i * 0.9) * 0.5 + 0.5;
-
-      // row bg
-      ctx.fillStyle = active ? 'rgba(0,229,180,0.10)' : (i % 2 === 0 ? 'rgba(255,255,255,0.025)' : 'transparent');
-      ctx.fillRect(0, y, W, ROW_H);
-
-      // left bio panel — title (bright, no dimming)
-      const bioX = MID * 0.5;
-      ctx.fillStyle = active ? '#2effc8' : '#00e5b4';
-      ctx.font = `bold ${W < 500 ? 12 : 14}px Syne`;
-      ctx.textAlign = 'center';
-      ctx.fillText(p.bio, bioX, y + ROW_H * 0.36);
-      // bio subtext — bright readable
-      ctx.fillStyle = 'rgba(220,255,245,0.85)';
-      ctx.font = `${W < 500 ? 10 : 11}px Space Mono`;
-      wrapText(ctx, p.bioSub, bioX, y + ROW_H * 0.56, MID - 20, W < 500 ? 15 : 16);
-
-      // right ai panel — title (bright)
-      const aiX = MID + MID * 0.5;
-      ctx.fillStyle = active ? '#b9a3ff' : '#9d85ff';
-      ctx.font = `bold ${W < 500 ? 12 : 14}px Syne`;
-      ctx.fillText(p.ai, aiX, y + ROW_H * 0.36);
-      // ai subtext — bright readable
-      ctx.fillStyle = 'rgba(232,226,255,0.85)';
-      ctx.font = `${W < 500 ? 10 : 11}px Space Mono`;
-      wrapText(ctx, p.aiSub, aiX, y + ROW_H * 0.56, MID - 20, W < 500 ? 15 : 16);
-
-      // center bridge
-      const bridgeAlpha = active ? 1 : 0.5 + pulse * 0.2;
-      const grad = ctx.createLinearGradient(MID - 28, 0, MID + 28, 0);
-      grad.addColorStop(0, `rgba(0,229,180,${bridgeAlpha})`);
-      grad.addColorStop(1, `rgba(157,133,255,${bridgeAlpha})`);
-      ctx.fillStyle = grad;
-      ctx.font = `bold ${active ? 18 : 15}px Syne`;
-      ctx.fillText('≈', MID, y + ROW_H * 0.5 + 6);
-
-      // divider line
-      if(i < PAIRS.length - 1) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(20, y + ROW_H);
-        ctx.lineTo(W - 20, y + ROW_H);
-        ctx.stroke();
-      }
-
-      // active left connector dot trail
-      if(active) {
-        const dotX = MID - 80 + Math.sin(animT * 3) * 20;
-        ctx.shadowBlur = 10; ctx.shadowColor = '#00e5b4';
-        ctx.fillStyle = '#00e5b4';
-        ctx.beginPath(); ctx.arc(dotX, y + ROW_H * 0.42, 4, 0, Math.PI*2); ctx.fill();
-        const dotX2 = MID + 80 + Math.sin(animT * 3 + Math.PI) * 20;
-        ctx.shadowColor = '#7b61ff';
-        ctx.fillStyle = '#7b61ff';
-        ctx.beginPath(); ctx.arc(dotX2, y + ROW_H * 0.42, 4, 0, Math.PI*2); ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-    });
-
-    // Column headers — bright
-    ctx.fillStyle = '#00e5b4';
-    ctx.font = 'bold 10px Space Mono';
-    ctx.letterSpacing = '2px';
-    ctx.textAlign = 'center';
-    ctx.fillText('HUMAN BRAIN', MID * 0.5, 12);
-    ctx.fillStyle = '#9d85ff';
-    ctx.fillText('LLM / NEURAL NET', MID + MID * 0.5, 12);
-    ctx.textAlign = 'left';
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
 
 // ─────────────────────────────────────────────
 // PIPELINE CANVAS — auto-running signal flow
