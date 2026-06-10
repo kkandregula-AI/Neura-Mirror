@@ -240,6 +240,26 @@
   }
   footer span{color:var(--bio);}
 
+  /* ── SCROLL PROGRESS BAR ── */
+  #scrollProgress{
+    position:fixed;top:0;left:0;height:3px;width:0%;z-index:10001;
+    background:linear-gradient(90deg,var(--bio),var(--warm),var(--ai));
+    transition:width .1s linear;box-shadow:0 0 10px rgba(0,229,180,0.5);
+  }
+
+  /* ── BACK TO TOP ── */
+  #backToTop{
+    position:fixed;bottom:24px;right:24px;z-index:1000;
+    width:48px;height:48px;border-radius:50%;
+    background:var(--card);border:1px solid var(--border);
+    color:var(--bio);font-size:20px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;transform:translateY(10px);
+    transition:all .3s;backdrop-filter:blur(10px);
+  }
+  #backToTop.show{opacity:1;visibility:visible;transform:none;}
+  #backToTop:hover{background:var(--bio);color:#07070f;box-shadow:var(--glow-bio);transform:translateY(-3px);}
+
   /* ── ANIMATIONS ── */
   @keyframes fadeUp{
     from{opacity:0;transform:translateY(24px);}
@@ -491,6 +511,9 @@
 </style>
 </head>
 <body>
+
+<div id="scrollProgress"></div>
+<button id="backToTop" aria-label="Back to top">↑</button>
 
 <!-- ══ INTRO SCREEN ══ -->
 <div id="introScreen">
@@ -1609,7 +1632,34 @@ window.addEventListener('scroll',()=>{
   document.querySelectorAll('.nav-tab').forEach(t=>{
     t.classList.toggle('active',t.dataset.target===cur);
   });
+
+  // Scroll progress bar
+  const scrolled = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docH > 0 ? (scrolled / docH) * 100 : 0;
+  const bar = document.getElementById('scrollProgress');
+  if(bar) bar.style.width = pct + '%';
+
+  // Back to top visibility
+  const btt = document.getElementById('backToTop');
+  if(btt) btt.classList.toggle('show', scrolled > 600);
+
+  // Auto-scroll active nav tab into view
+  const activeTab = document.querySelector('.nav-tab.active');
+  if(activeTab && activeTab.scrollIntoView){
+    const tabsBar = activeTab.parentElement;
+    const tabLeft = activeTab.offsetLeft;
+    const tabRight = tabLeft + activeTab.offsetWidth;
+    if(tabLeft < tabsBar.scrollLeft || tabRight > tabsBar.scrollLeft + tabsBar.clientWidth){
+      tabsBar.scrollTo({left: tabLeft - 20, behavior:'smooth'});
+    }
+  }
 },{passive:true});
+
+// Back to top click
+document.getElementById('backToTop')?.addEventListener('click',()=>{
+  window.scrollTo({top:0,behavior:'smooth'});
+});
 
 // ─────────────────────────────────────────────
 // INTRO SCREEN — animated logo + dismiss
